@@ -1,0 +1,19 @@
+{
+  "name": "oneiro_engine",
+  "version": "1.0.0",
+  "description": "Infinite canvas engine with zoom/pan, grid patterns, and coordinate system",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["canvas", "infinite", "zoom", "pan", "grid"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

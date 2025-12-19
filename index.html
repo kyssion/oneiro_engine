@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oneiro Engine - Infinite Canvas</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+    </div>
+    <div id="controls">
+      <div class="control-group">
+        <label>Pattern:</label>
+        <select id="pattern-select">
+          <option value="grid">Grid</option>
+          <option value="dots">Dots</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Zoom: <span id="zoom-display">100%</span></label>
+      </div>
+      <div class="control-group">
+        <button id="reset-btn">Reset View</button>
+      </div>
+    </div>
+    <div id="coordinates">
+      <span id="coord-display">X: 0, Y: 0</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
