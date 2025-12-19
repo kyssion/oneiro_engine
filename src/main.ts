@@ -9,6 +9,7 @@ import {
   ShapeType,
   InteractionMode
 } from './core';
+import { getContrastingGridColors, getContrastingAxisColors } from './utils';
 
 /**
  * Main application entry point
@@ -43,6 +44,11 @@ class App {
   private strokeColorInput!: HTMLInputElement;
   private fillColorLabel!: HTMLSpanElement;
   private strokeColorLabel!: HTMLSpanElement;
+  
+  // Background color
+  private bgColorInput!: HTMLInputElement;
+  private bgColorLabel!: HTMLSpanElement;
+  private backgroundColor = '#ffffff';
 
   constructor() {
     // Get canvas element
@@ -89,6 +95,10 @@ class App {
     this.strokeColorInput = document.getElementById('stroke-color') as HTMLInputElement;
     this.fillColorLabel = document.getElementById('fill-color-label') as HTMLSpanElement;
     this.strokeColorLabel = document.getElementById('stroke-color-label') as HTMLSpanElement;
+    
+    // Background color
+    this.bgColorInput = document.getElementById('bg-color') as HTMLInputElement;
+    this.bgColorLabel = document.getElementById('bg-color-label') as HTMLSpanElement;
   }
 
   private setupEventListeners(): void {
@@ -141,6 +151,12 @@ class App {
       const color = (e.target as HTMLInputElement).value;
       this.strokeColorLabel.textContent = color;
       this.shapeManager.applyStyleToSelected({ strokeColor: color });
+    });
+
+    // Background color input
+    this.bgColorInput.addEventListener('input', (e) => {
+      const color = (e.target as HTMLInputElement).value;
+      this.setBackgroundColor(color);
     });
 
     // Transform change listener
@@ -247,14 +263,37 @@ class App {
     }
   }
 
+  /**
+   * Set background color and update grid/axis colors for contrast
+   */
+  private setBackgroundColor(color: string): void {
+    this.backgroundColor = color;
+    this.bgColorLabel.textContent = color;
+    this.bgColorInput.value = color;
+
+    // Update grid colors for contrast
+    const gridColors = getContrastingGridColors(color);
+    this.gridRenderer.setColors(gridColors.gridColor, gridColors.subGridColor);
+
+    // Update coordinate system colors for contrast
+    const axisColors = getContrastingAxisColors(color);
+    this.coordinateSystem.setColors(
+      axisColors.axisColor,
+      axisColors.tickColor,
+      axisColors.labelColor
+    );
+  }
+
   private render(): void {
     const ctx = this.canvas.getContext();
     const transform = this.canvas.getTransform();
     const bounds = this.canvas.getViewportBounds();
     const size = this.canvas.getCanvasSize();
 
-    // Clear canvas
+    // Clear and fill with background color
     this.canvas.clear();
+    ctx.fillStyle = this.backgroundColor;
+    ctx.fillRect(0, 0, size.width, size.height);
 
     // Render layers in order
     this.gridRenderer.render(ctx, transform, bounds, size);

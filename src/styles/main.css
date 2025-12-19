@@ -230,6 +230,39 @@ html, body {
   color: #666;
 }
 
+/* Background Color Picker (smaller version for controls panel) */
+.bg-color-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.color-input-sm {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.color-input-sm::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.color-input-sm::-webkit-color-swatch {
+  border-radius: 2px;
+  border: none;
+}
+
+.color-label-sm {
+  font-size: 10px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  color: #666;
+}
+
 /* Action Buttons */
 .action-btn {
   display: flex;

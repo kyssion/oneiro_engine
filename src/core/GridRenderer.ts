@@ -218,4 +218,12 @@ export class GridRenderer {
   public setSubGridColor(color: string): void {
     this.config.subGridColor = color;
   }
+
+  /**
+   * Update both grid colors at once (useful for theme changes)
+   */
+  public setColors(gridColor: string, subGridColor: string): void {
+    this.config.gridColor = gridColor;
+    this.config.subGridColor = subGridColor;
+  }
 }
