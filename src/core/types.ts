@@ -83,6 +83,15 @@ export type InteractionMode =
   | 'draw';   // 绘制模式：创建新图形
 
 /**
+ * 坐标轴显示模式
+ * 定义坐标系的显示方式
+ */
+export type CoordinateAxisMode = 
+  | 'fixed'   // 固定模式：刻度固定在画布边缘，数值随拖拽和缩放变化
+  | 'origin'  // 原点模式：坐标轴跟随原点移动，传统坐标系显示
+  | 'hidden'; // 隐藏模式：不显示坐标轴
+
+/**
  * 边界框
  * 描述图形的矩形包围盒
  */

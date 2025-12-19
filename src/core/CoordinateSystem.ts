@@ -1,4 +1,4 @@
-import { Transform, ViewportBounds } from './types';
+import { Transform, ViewportBounds, CoordinateAxisMode } from './types';
 
 /**
  * CoordinateSystem - 坐标系渲染器
@@ -11,6 +11,7 @@ import { Transform, ViewportBounds } from './types';
  * - 智能定位：当坐标轴不可见时，将刻度和标签显示在画布边缘
  * - 数字格式化：极大或极小的数字使用科学记数法
  * - 动态颜色：支持根据背景色调整坐标轴颜色
+ * - 三种显示模式：固定模式、原点模式、隐藏模式
  */
 export class CoordinateSystem {
   // 颜色配置
@@ -23,6 +24,9 @@ export class CoordinateSystem {
   private tickLength = 6;             // 刻度线长度（像素）
   private labelFont = '11px sans-serif';  // 标签字体
   private labelPadding = 4;           // 标签与坐标轴的间距
+  
+  // 显示模式
+  private displayMode: CoordinateAxisMode = 'origin';  // 默认为原点模式
 
   /**
    * 根据缩放级别计算刻度间距
@@ -78,7 +82,7 @@ export class CoordinateSystem {
 
   /**
    * 渲染坐标系
-   * 绘制 X/Y 坐标轴、刻度线和数字标签
+   * 根据显示模式绘制 X/Y 坐标轴、刻度线和数字标签
    * 
    * @param ctx - 绘图上下文
    * @param transform - 画布变换状态
@@ -91,6 +95,11 @@ export class CoordinateSystem {
     bounds: ViewportBounds,
     canvasSize: { width: number; height: number }
   ): void {
+    // 隐藏模式：不渲染任何内容
+    if (this.displayMode === 'hidden') {
+      return;
+    }
+
     const tickSpacing = this.calculateTickSpacing(transform.scale);
     
     // 计算原点在屏幕上的位置
@@ -99,17 +108,158 @@ export class CoordinateSystem {
 
     ctx.save();
 
-    // 绘制坐标轴主线
-    this.drawAxes(ctx, originX, originY, canvasSize);
-
-    // 绘制刻度和标签
-    this.drawXAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing, originY);
-    this.drawYAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing, originX);
-
-    // 绘制原点标签 (0, 0)
-    this.drawOriginLabel(ctx, originX, originY, canvasSize);
+    if (this.displayMode === 'fixed') {
+      // 固定模式：刻度固定在画布边缘
+      this.renderFixedMode(ctx, transform, bounds, canvasSize, tickSpacing);
+    } else {
+      // 原点模式：传统坐标轴显示
+      this.drawAxes(ctx, originX, originY, canvasSize);
+      this.drawXAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing, originY);
+      this.drawYAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing, originX);
+      this.drawOriginLabel(ctx, originX, originY, canvasSize);
+    }
 
     ctx.restore();
+  }
+
+  /**
+   * 固定模式渲染
+   * 刻度固定在画布左上角和上边缘，数值随拖拽和缩放变化
+   * 不绘制坐标轴主线，仅显示刻度和数值
+   * 
+   * @param ctx - 绘图上下文
+   * @param transform - 画布变换状态
+   * @param bounds - 视口边界
+   * @param canvasSize - 画布尺寸
+   * @param tickSpacing - 刻度间距
+   */
+  private renderFixedMode(
+    ctx: CanvasRenderingContext2D,
+    transform: Transform,
+    bounds: ViewportBounds,
+    canvasSize: { width: number; height: number },
+    tickSpacing: number
+  ): void {
+    // 绘制固定在顶部的 X 轴刻度
+    this.drawFixedXAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing);
+    // 绘制固定在左侧的 Y 轴刻度
+    this.drawFixedYAxisTicks(ctx, transform, bounds, canvasSize, tickSpacing);
+  }
+
+  /**
+   * 绘制固定在顶部的 X 轴刻度
+   * 刻度始终在画布顶部，数值随视图变化
+   */
+  private drawFixedXAxisTicks(
+    ctx: CanvasRenderingContext2D,
+    transform: Transform,
+    bounds: ViewportBounds,
+    canvasSize: { width: number; height: number },
+    tickSpacing: number
+  ): void {
+    // 绘制顶部坐标轴背景（确保数字可见）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillRect(0, 0, canvasSize.width, 22);
+    
+    // 绘制底部边框线
+    ctx.strokeStyle = this.tickColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 22);
+    ctx.lineTo(canvasSize.width, 22);
+    ctx.stroke();
+
+    ctx.fillStyle = this.labelColor;
+    ctx.font = this.labelFont;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    // 计算需要绘制的刻度范围
+    const startX = Math.floor(bounds.left / tickSpacing) * tickSpacing;
+    const endX = Math.ceil(bounds.right / tickSpacing) * tickSpacing;
+
+    // 绘制刻度线
+    ctx.strokeStyle = this.tickColor;
+    ctx.beginPath();
+    for (let x = startX; x <= endX; x += tickSpacing) {
+      const screenX = x * transform.scale + transform.offsetX;
+      if (screenX < 60 || screenX > canvasSize.width - 10) continue;
+
+      ctx.moveTo(screenX, 16);
+      ctx.lineTo(screenX, 22);
+    }
+    ctx.stroke();
+
+    // 绘制标签
+    for (let x = startX; x <= endX; x += tickSpacing) {
+      const screenX = x * transform.scale + transform.offsetX;
+      if (screenX < 60 || screenX > canvasSize.width - 30) continue;
+
+      ctx.fillText(this.formatNumber(x), screenX, 4);
+    }
+  }
+
+  /**
+   * 绘制固定在左侧的 Y 轴刻度
+   * 刻度始终在画布左侧，数值随视图变化
+   */
+  private drawFixedYAxisTicks(
+    ctx: CanvasRenderingContext2D,
+    transform: Transform,
+    bounds: ViewportBounds,
+    canvasSize: { width: number; height: number },
+    tickSpacing: number
+  ): void {
+    // 绘制左侧坐标轴背景（确保数字可见）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillRect(0, 22, 55, canvasSize.height - 22);
+    
+    // 绘制右侧边框线
+    ctx.strokeStyle = this.tickColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(55, 22);
+    ctx.lineTo(55, canvasSize.height);
+    ctx.stroke();
+
+    ctx.fillStyle = this.labelColor;
+    ctx.font = this.labelFont;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    // 计算需要绘制的刻度范围
+    const startY = Math.floor(bounds.top / tickSpacing) * tickSpacing;
+    const endY = Math.ceil(bounds.bottom / tickSpacing) * tickSpacing;
+
+    // 绘制刻度线
+    ctx.strokeStyle = this.tickColor;
+    ctx.beginPath();
+    for (let y = startY; y <= endY; y += tickSpacing) {
+      const screenY = y * transform.scale + transform.offsetY;
+      if (screenY < 28 || screenY > canvasSize.height - 10) continue;
+
+      ctx.moveTo(49, screenY);
+      ctx.lineTo(55, screenY);
+    }
+    ctx.stroke();
+
+    // 绘制标签
+    for (let y = startY; y <= endY; y += tickSpacing) {
+      const screenY = y * transform.scale + transform.offsetY;
+      if (screenY < 28 || screenY > canvasSize.height - 10) continue;
+
+      // 注意：Y 轴值是反转的
+      ctx.fillText(this.formatNumber(-y), 47, screenY);
+    }
+
+    // 绘制左上角标签（表示坐标系）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillRect(0, 0, 55, 22);
+    ctx.fillStyle = this.labelColor;
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('X / Y', 27, 11);
   }
 
   /**
@@ -364,5 +514,21 @@ export class CoordinateSystem {
    */
   public setAxisWidth(width: number): void {
     this.axisWidth = width;
+  }
+
+  /**
+   * 设置显示模式
+   * @param mode - 显示模式（fixed/origin/hidden）
+   */
+  public setDisplayMode(mode: CoordinateAxisMode): void {
+    this.displayMode = mode;
+  }
+
+  /**
+   * 获取当前显示模式
+   * @returns 当前显示模式
+   */
+  public getDisplayMode(): CoordinateAxisMode {
+    return this.displayMode;
   }
 }

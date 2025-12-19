@@ -14,7 +14,8 @@ import {
   InteractionManager,   // 交互管理器
   GridPattern,          // 网格模式类型
   ShapeType,            // 图形类型
-  InteractionMode       // 交互模式类型
+  InteractionMode,      // 交互模式类型
+  CoordinateAxisMode    // 坐标轴显示模式类型
 } from './core';
 
 /**
@@ -44,6 +45,7 @@ class App {
 
   // UI 元素（视图控制）
   private patternSelect!: HTMLSelectElement;   // 网格模式选择器
+  private axisModeSelect!: HTMLSelectElement;  // 坐标轴模式选择器
   private zoomDisplay!: HTMLSpanElement;       // 缩放级别显示
   private coordDisplay!: HTMLSpanElement;      // 坐标显示
   private modeDisplay!: HTMLSpanElement;       // 模式显示
@@ -103,6 +105,7 @@ class App {
   private getUIElements(): void {
     // 视图控制
     this.patternSelect = document.getElementById('pattern-select') as HTMLSelectElement;
+    this.axisModeSelect = document.getElementById('axis-mode-select') as HTMLSelectElement;
     this.zoomDisplay = document.getElementById('zoom-display') as HTMLSpanElement;
     this.coordDisplay = document.getElementById('coord-display') as HTMLSpanElement;
     this.modeDisplay = document.getElementById('mode-display') as HTMLSpanElement;
@@ -136,6 +139,12 @@ class App {
     this.patternSelect.addEventListener('change', (e) => {
       const pattern = (e.target as HTMLSelectElement).value as GridPattern;
       this.gridRenderer.setPattern(pattern);
+    });
+
+    // 坐标轴显示模式选择
+    this.axisModeSelect.addEventListener('change', (e) => {
+      const mode = (e.target as HTMLSelectElement).value as CoordinateAxisMode;
+      this.coordinateSystem.setDisplayMode(mode);
     });
 
     // 重置视图按钮
