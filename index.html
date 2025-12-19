@@ -11,6 +11,79 @@
     <div id="canvas-container">
       <canvas id="main-canvas"></canvas>
     </div>
+    
+    <!-- Left Toolbar - Tools and Shapes -->
+    <div id="toolbar">
+      <div class="toolbar-section">
+        <label class="toolbar-label">Mode</label>
+        <div class="tool-buttons">
+          <button id="tool-select" class="tool-btn active" title="Select (V)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M3,3L10,21L12,15L18,13L3,3Z"/>
+            </svg>
+          </button>
+          <button id="tool-pan" class="tool-btn" title="Pan (H)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M10,9A1,1 0 0,1 11,8A1,1 0 0,1 12,9V13.47L13.21,13.6L18.15,15.79C18.68,16.03 19,16.56 19,17.14V21.5C18.97,22.32 18.32,22.97 17.5,23H11C10.62,23 10.26,22.85 10,22.57L5.1,18.37L5.84,17.6C6.03,17.39 6.3,17.28 6.58,17.28H6.8L10,19V9M11,5A4,4 0 0,1 15,9C15,10.5 14.2,11.77 13,12.46V11.24C13.61,10.69 14,9.89 14,9A3,3 0 0,0 11,6A3,3 0 0,0 8,9C8,9.89 8.39,10.69 9,11.24V12.46C7.8,11.77 7,10.5 7,9A4,4 0 0,1 11,5Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="toolbar-divider"></div>
+      
+      <div class="toolbar-section">
+        <label class="toolbar-label">Shapes</label>
+        <div class="tool-buttons">
+          <button id="shape-rect" class="tool-btn" title="Rectangle">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+            </svg>
+          </button>
+          <button id="shape-circle" class="tool-btn" title="Circle">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+          </button>
+          <button id="shape-triangle" class="tool-btn" title="Triangle">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3L22 21H2L12 3Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="toolbar-divider"></div>
+      
+      <div class="toolbar-section">
+        <label class="toolbar-label">Fill Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="fill-color" value="#4a90d9" class="color-input">
+          <span id="fill-color-label" class="color-label">#4a90d9</span>
+        </div>
+      </div>
+      
+      <div class="toolbar-section">
+        <label class="toolbar-label">Stroke Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="stroke-color" value="#2a6bb8" class="color-input">
+          <span id="stroke-color-label" class="color-label">#2a6bb8</span>
+        </div>
+      </div>
+      
+      <div class="toolbar-divider"></div>
+      
+      <div class="toolbar-section">
+        <button id="delete-btn" class="action-btn danger" title="Delete (Del)">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+          </svg>
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Panel - View Controls -->
     <div id="controls">
       <div class="control-group">
         <label>Pattern:</label>
@@ -26,8 +99,15 @@
         <button id="reset-btn">Reset View</button>
       </div>
     </div>
+    
+    <!-- Bottom Left - Coordinates -->
     <div id="coordinates">
       <span id="coord-display">X: 0, Y: 0</span>
+    </div>
+    
+    <!-- Bottom Center - Mode Indicator -->
+    <div id="mode-indicator">
+      <span id="mode-display">Select Mode</span>
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>

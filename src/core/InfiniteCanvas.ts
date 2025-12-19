@@ -16,6 +16,7 @@ export class InfiniteCanvas {
   };
 
   private isDragging = false;
+  private isPanEnabled = false; // External pan control
   private lastMousePos: Point = { x: 0, y: 0 };
   private currentMouseWorldPos: Point = { x: 0, y: 0 };
 
@@ -101,7 +102,8 @@ export class InfiniteCanvas {
   }
 
   private handleMouseDown(e: MouseEvent): void {
-    if (e.button === 0 || e.button === 1) { // Left or middle button
+    // Only pan with middle mouse button or when pan mode is enabled
+    if (e.button === 1 || (e.button === 0 && this.isPanEnabled)) {
       this.isDragging = true;
       this.lastMousePos = { x: e.clientX, y: e.clientY };
       this.canvas.style.cursor = 'grabbing';
@@ -133,7 +135,9 @@ export class InfiniteCanvas {
 
   private handleMouseUp(): void {
     this.isDragging = false;
-    this.canvas.style.cursor = 'grab';
+    if (this.isPanEnabled) {
+      this.canvas.style.cursor = 'grab';
+    }
   }
 
   private lastTouchDistance = 0;
@@ -277,5 +281,16 @@ export class InfiniteCanvas {
   public clear(): void {
     const size = this.getCanvasSize();
     this.ctx.clearRect(0, 0, size.width, size.height);
+  }
+
+  public setPanEnabled(enabled: boolean): void {
+    this.isPanEnabled = enabled;
+    if (enabled) {
+      this.canvas.style.cursor = 'grab';
+    }
+  }
+
+  public getPanEnabled(): boolean {
+    return this.isPanEnabled;
   }
 }
