@@ -1,5 +1,4 @@
-import { Point, Transform, ShapeStyle } from '../types';
-import { Shape } from './Shape';
+import { Point, Transform, ShapeStyle,Shape } from '@/core';
 
 /**
  * Rectangle shape

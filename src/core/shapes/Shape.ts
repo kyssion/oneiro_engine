@@ -1,4 +1,4 @@
-import { Point, Transform, BoundingBox, ShapeStyle, ShapeType, ShapeData, ResizeHandle, HandleInfo } from './types';
+import { Point, Transform, BoundingBox, ShapeStyle, ShapeType, ShapeData, ResizeHandle, HandleInfo } from '@/core';
 
 /**
  * Generate unique ID for shapes
