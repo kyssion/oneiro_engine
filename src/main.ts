@@ -438,10 +438,21 @@ class App {
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, size.width, size.height);
 
-    // 按顺序渲染各层：网格 → 坐标系 → 图形
+    // 渲染网格（始终在最底层）
     this.gridRenderer.render(ctx, transform, bounds, size);
-    this.coordinateSystem.render(ctx, transform, bounds, size);
-    this.shapeManager.render(ctx, transform);
+
+    // 根据坐标轴显示模式决定渲染顺序
+    const axisMode = this.coordinateSystem.getDisplayMode();
+    
+    if (axisMode === 'fixed') {
+      // 固定模式：先渲染图形，再渲染坐标轴（坐标轴在上层遮盖图形）
+      this.shapeManager.render(ctx, transform);
+      this.coordinateSystem.render(ctx, transform, bounds, size);
+    } else {
+      // 原点模式/隐藏模式：先渲染坐标轴，再渲染图形（图形在上层）
+      this.coordinateSystem.render(ctx, transform, bounds, size);
+      this.shapeManager.render(ctx, transform);
+    }
   }
 
   /**
