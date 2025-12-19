@@ -256,6 +256,83 @@ class App {
           break;
       }
     });
+
+    // 设置可拖拽面板
+    this.setupDraggablePanels();
+  }
+
+  /**
+   * 设置可拖拽面板
+   * 为工具栏和控制面板添加拖拽功能
+   */
+  private setupDraggablePanels(): void {
+    const dragHandles = document.querySelectorAll('.panel-drag-handle');
+    
+    dragHandles.forEach(handle => {
+      const targetId = (handle as HTMLElement).dataset.target;
+      if (!targetId) return;
+      
+      const panel = document.getElementById(targetId);
+      if (!panel) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let initialLeft = 0;
+      let initialTop = 0;
+
+      // 鼠标按下 - 开始拖拽
+      handle.addEventListener('mousedown', (e: Event) => {
+        const mouseEvent = e as MouseEvent;
+        isDragging = true;
+        startX = mouseEvent.clientX;
+        startY = mouseEvent.clientY;
+
+        // 获取当前面板位置
+        const rect = panel.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        // 切换到绝对定位（如果之前用的是 right）
+        panel.style.left = `${initialLeft}px`;
+        panel.style.top = `${initialTop}px`;
+        panel.style.right = 'auto';
+
+        panel.classList.add('dragging');
+        mouseEvent.preventDefault();
+      });
+
+      // 鼠标移动 - 拖拽中
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (!isDragging) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        // 计算新位置
+        let newLeft = initialLeft + dx;
+        let newTop = initialTop + dy;
+
+        // 限制在窗口范围内
+        const panelRect = panel.getBoundingClientRect();
+        const maxLeft = window.innerWidth - panelRect.width;
+        const maxTop = window.innerHeight - panelRect.height;
+
+        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        newTop = Math.max(0, Math.min(newTop, maxTop));
+
+        panel.style.left = `${newLeft}px`;
+        panel.style.top = `${newTop}px`;
+      });
+
+      // 鼠标释放 - 停止拖拽
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          panel.classList.remove('dragging');
+        }
+      });
+    });
   }
 
   /**

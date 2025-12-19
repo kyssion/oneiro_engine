@@ -70,12 +70,14 @@ html, body {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   padding: 16px;
+  padding-top: 32px;  /* 为拖拽手柄留出空间 */
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-width: 160px;
   z-index: 100;
+  user-select: none;  /* 防止拖拽时选中文本 */
 }
 
 .control-group {
@@ -167,12 +169,48 @@ html, body {
   background: rgba(255, 255, 255, 0.98);
   border-radius: 10px;
   padding: 12px;
+  padding-top: 28px;  /* 为拖拽手柄留出空间 */
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   gap: 8px;
   z-index: 100;
   min-width: 56px;
+  user-select: none;  /* 防止拖拽时选中文本 */
+}
+
+/* 可拖拽面板的拖拽手柄 */
+.panel-drag-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.03), transparent);
+}
+
+.panel-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* 拖拽手柄图标（三条横线） */
+.panel-drag-handle::before {
+  content: '';
+  width: 32px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+/* 拖拽时的面板样式 */
+.dragging {
+  opacity: 0.9;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .toolbar-section {
