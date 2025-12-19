@@ -407,14 +407,13 @@ export class InfiniteCanvas {
 
   /**
    * 重置视图
-   * 将画布重置为 100% 缩放，并将原点居中显示
+   * 将画布重置为 100% 缩放，并将原点放置在左上角
    */
   public resetView(): void {
     this.transform = { scale: 1, offsetX: 0, offsetY: 0 };
-    const size = this.getCanvasSize();
-    // 将原点移动到画布中心
-    this.transform.offsetX = size.width / 2;
-    this.transform.offsetY = size.height / 2;
+    // 将原点放置在左上角（留出一定边距给 UI 元素）
+    this.transform.offsetX = 80;   // 左侧工具栏宽度 + 边距
+    this.transform.offsetY = 50;   // 顶部边距
     this.notifyTransformChange();
   }
 
