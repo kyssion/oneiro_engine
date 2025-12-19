@@ -21,7 +21,11 @@ import {
 /**
  * 导入工具函数
  */
-import { getContrastingGridColors, getContrastingAxisColors } from './utils';
+import { 
+  getContrastingGridColors, 
+  getContrastingAxisColors,
+  getFixedAxisBackgroundColor 
+} from './utils';
 
 /**
  * App - 应用程序主类
@@ -421,6 +425,10 @@ class App {
       axisColors.tickColor,
       axisColors.labelColor
     );
+
+    // 设置固定模式坐标轴的背景颜色
+    const fixedBgColor = getFixedAxisBackgroundColor(color);
+    this.coordinateSystem.setFixedModeBackgroundColor(fixedBgColor);
   }
 
   /**

@@ -167,3 +167,20 @@ export function blendColors(color1: string, color2: string, ratio: number): stri
   
   return rgbToHex(r, g, b);
 }
+
+/**
+ * 根据背景颜色获取固定模式坐标轴的背景颜色
+ * 用于确保固定坐标轴区域与画布背景协调一致
+ * 
+ * @param backgroundColor - 背景颜色的十六进制字符串
+ * @returns 带透明度的背景颜色字符串 (rgba 格式)
+ */
+export function getFixedAxisBackgroundColor(backgroundColor: string): string {
+  const rgb = hexToRgb(backgroundColor);
+  if (!rgb) {
+    return 'rgba(255, 255, 255, 0.9)';
+  }
+  
+  // 使用背景色作为基础，添加高透明度
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.92)`;
+}

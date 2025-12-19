@@ -18,6 +18,7 @@ export class CoordinateSystem {
   private axisColor = 'rgba(100, 100, 100, 0.9)';   // 坐标轴主线颜色
   private tickColor = 'rgba(80, 80, 80, 0.8)';     // 刻度线颜色
   private labelColor = 'rgba(60, 60, 60, 1)';      // 数字标签颜色
+  private fixedModeBackgroundColor = 'rgba(255, 255, 255, 0.9)';  // 固定模式背景颜色
   
   // 样式配置
   private axisWidth = 2;              // 坐标轴线宽（像素）
@@ -158,7 +159,7 @@ export class CoordinateSystem {
     tickSpacing: number
   ): void {
     // 绘制顶部坐标轴背景（确保数字可见）
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillStyle = this.fixedModeBackgroundColor;
     ctx.fillRect(0, 0, canvasSize.width, 22);
     
     // 绘制底部边框线
@@ -211,7 +212,7 @@ export class CoordinateSystem {
     tickSpacing: number
   ): void {
     // 绘制左侧坐标轴背景（确保数字可见）
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillStyle = this.fixedModeBackgroundColor;
     ctx.fillRect(0, 22, 55, canvasSize.height - 22);
     
     // 绘制右侧边框线
@@ -253,7 +254,7 @@ export class CoordinateSystem {
     }
 
     // 绘制左上角标签（表示坐标系）
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillStyle = this.fixedModeBackgroundColor;
     ctx.fillRect(0, 0, 55, 22);
     ctx.fillStyle = this.labelColor;
     ctx.font = 'bold 10px sans-serif';
@@ -506,6 +507,16 @@ export class CoordinateSystem {
     this.axisColor = axis;
     this.tickColor = tick;
     this.labelColor = label;
+  }
+
+  /**
+   * 设置固定模式背景颜色
+   * 用于根据画布背景色调整固定坐标轴的背景颜色
+   * 
+   * @param color - 背景颜色（带透明度的 CSS 颜色值）
+   */
+  public setFixedModeBackgroundColor(color: string): void {
+    this.fixedModeBackgroundColor = color;
   }
 
   /**
