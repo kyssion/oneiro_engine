@@ -1,87 +1,144 @@
 /**
- * Common type definitions for the canvas engine
+ * 画布引擎的通用类型定义
+ * 
+ * 此文件定义了整个画布引擎系统中使用的所有核心类型、接口和枚举。
+ * 包括坐标、变换、网格、图形、交互等相关的数据结构。
  */
 
+/**
+ * 二维坐标点
+ * 用于表示画布上的位置、偏移量等
+ */
 export interface Point {
-  x: number;
-  y: number;
+  x: number;  // X 坐标（水平方向）
+  y: number;  // Y 坐标（垂直方向）
 }
 
+/**
+ * 画布变换状态
+ * 描述画布的缩放和平移变换
+ */
 export interface Transform {
-  scale: number;
-  offsetX: number;
-  offsetY: number;
+  scale: number;    // 缩放比例（1.0 = 100%，2.0 = 200% 放大）
+  offsetX: number;  // X 轴偏移量（像素）
+  offsetY: number;  // Y 轴偏移量（像素）
 }
 
-export type GridPattern = 'grid' | 'dots';
+/**
+ * 网格图案类型
+ * 定义网格的显示样式
+ */
+export type GridPattern = 'grid' | 'dots';  // 'grid' = 线条网格, 'dots' = 点状网格
 
+/**
+ * 网格配置选项
+ * 控制网格的外观和行为
+ */
 export interface GridConfig {
-  pattern: GridPattern;
-  baseGridSize: number;
-  minGridSize: number;
-  maxGridSize: number;
-  gridColor: string;
-  subGridColor: string;
-  dotRadius: number;
+  pattern: GridPattern;      // 网格图案类型
+  baseGridSize: number;      // 基础网格大小（世界坐标单位）
+  minGridSize: number;       // 最小网格大小（防止过密）
+  maxGridSize: number;       // 最大网格大小（防止过疏）
+  gridColor: string;         // 主网格颜色（CSS 颜色值）
+  subGridColor: string;      // 次网格颜色（CSS 颜色值）
+  dotRadius: number;         // 点的半径（仅用于点状网格）
 }
 
+/**
+ * 画布配置选项
+ * 控制画布的缩放行为
+ */
 export interface CanvasConfig {
-  minScale: number;
-  maxScale: number;
-  zoomSensitivity: number;
+  minScale: number;          // 最小缩放比例（如 0.01 = 1%）
+  maxScale: number;          // 最大缩放比例（如 100 = 10000%）
+  zoomSensitivity: number;   // 缩放灵敏度（控制滚轮缩放速度）
 }
 
+/**
+ * 视口边界
+ * 描述当前可见区域在世界坐标系中的范围
+ */
 export interface ViewportBounds {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-  width: number;
-  height: number;
+  left: number;    // 左边界（世界坐标）
+  right: number;   // 右边界（世界坐标）
+  top: number;     // 上边界（世界坐标）
+  bottom: number;  // 下边界（世界坐标）
+  width: number;   // 宽度（世界坐标单位）
+  height: number;  // 高度（世界坐标单位）
 }
 
-// Shape types
+/**
+ * 图形类型
+ * 定义支持的图形种类
+ */
 export type ShapeType = 'rectangle' | 'circle' | 'triangle';
 
-export type InteractionMode = 'select' | 'pan' | 'draw';
+/**
+ * 交互模式
+ * 定义用户当前的操作模式
+ */
+export type InteractionMode = 
+  | 'select'  // 选择模式：选中、移动、调整图形
+  | 'pan'     // 平移模式：拖动画布
+  | 'draw';   // 绘制模式：创建新图形
 
+/**
+ * 边界框
+ * 描述图形的矩形包围盒
+ */
 export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number;       // 左上角 X 坐标
+  y: number;       // 左上角 Y 坐标
+  width: number;   // 宽度
+  height: number;  // 高度
 }
 
+/**
+ * 图形样式
+ * 定义图形的视觉外观
+ */
 export interface ShapeStyle {
-  fillColor: string;
-  strokeColor: string;
-  strokeWidth: number;
-  opacity: number;
+  fillColor: string;    // 填充颜色（CSS 颜色值）
+  strokeColor: string;  // 描边颜色（CSS 颜色值）
+  strokeWidth: number;  // 描边宽度（像素）
+  opacity: number;      // 不透明度（0-1，0=完全透明，1=完全不透明）
 }
 
+/**
+ * 图形数据
+ * 包含图形的完整状态信息（用于序列化/反序列化）
+ */
 export interface ShapeData {
-  id: string;
-  type: ShapeType;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation: number;
-  style: ShapeStyle;
+  id: string;           // 唯一标识符
+  type: ShapeType;      // 图形类型
+  x: number;            // X 坐标（左上角）
+  y: number;            // Y 坐标（左上角）
+  width: number;        // 宽度
+  height: number;       // 高度
+  rotation: number;     // 旋转角度（弧度，暂未实现）
+  style: ShapeStyle;    // 样式配置
 }
 
+/**
+ * 调整大小的控制点类型
+ * 定义图形边界上的 8 个控制点位置
+ */
 export type ResizeHandle = 
-  | 'top-left' 
-  | 'top-center' 
-  | 'top-right' 
-  | 'middle-left' 
-  | 'middle-right' 
-  | 'bottom-left' 
-  | 'bottom-center' 
-  | 'bottom-right';
+  | 'top-left'       // 左上角
+  | 'top-center'     // 上边中点
+  | 'top-right'      // 右上角
+  | 'middle-left'    // 左边中点
+  | 'middle-right'   // 右边中点
+  | 'bottom-left'    // 左下角
+  | 'bottom-center'  // 下边中点
+  | 'bottom-right';  // 右下角
 
+/**
+ * 控制点信息
+ * 描述单个控制点的位置和类型
+ */
 export interface HandleInfo {
-  handle: ResizeHandle;
-  x: number;
-  y: number;
+  handle: ResizeHandle;  // 控制点类型
+  x: number;             // X 坐标（世界坐标）
+  y: number;             // Y 坐标（世界坐标）
 }

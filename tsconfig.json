@@ -1,23 +1,37 @@
+/**
+ * TypeScript 编译配置文件
+ * 
+ * 配置项说明：
+ * - target: 编译目标为 ES2020，支持现代浏览器特性
+ * - module: 使用 ESNext 模块系统（原生 ES 模块）
+ * - lib: 包含 ES2020 和 DOM API 类型定义
+ * - strict: 启用严格类型检查，提高代码质量
+ * - baseUrl 和 paths: 路径别名 '@/' 指向 'src/' 目录
+ */
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "target": "ES2020",                        // 编译目标版本
+    "useDefineForClassFields": true,          // 使用 ES2022 类字段定义
+    "module": "ESNext",                       // 模块系统
+    "lib": ["ES2020", "DOM", "DOM.Iterable"], // 包含的类型库
+    "skipLibCheck": true,                     // 跳过第三方库的类型检查
+    "moduleResolution": "bundler",            // 模块解析策略（Vite 使用）
+    "allowImportingTsExtensions": true,       // 允许导入 .ts 扩展名
+    "resolveJsonModule": true,                // 允许导入 JSON 文件
+    "isolatedModules": true,                  // 确保每个文件可单独编译
+    "noEmit": true,                           // 不生成输出文件（Vite 负责构建）
+    
+    // 严格模式相关配置
+    "strict": true,                           // 启用所有严格类型检查
+    "noUnusedLocals": true,                   // 检查未使用的局部变量
+    "noUnusedParameters": true,               // 检查未使用的函数参数
+    "noFallthroughCasesInSwitch": true,       // 检查 switch 语句的穿透情况
+    
+    // 路径别名配置
+    "baseUrl": ".",                          // 基础路径
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"]                       // '@' 别名指向 src 目录
     }
   },
-  "include": ["src"]
+  "include": ["src"]                          // 编译范围：仅包含 src 目录
 }

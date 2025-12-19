@@ -1,63 +1,85 @@
+/**
+ * 导入样式文件
+ */
 import './styles/main.css';
+
+/**
+ * 导入核心模块
+ */
 import { 
-  InfiniteCanvas, 
-  GridRenderer, 
-  CoordinateSystem, 
-  ShapeManager,
-  InteractionManager,
-  GridPattern,
-  ShapeType,
-  InteractionMode
+  InfiniteCanvas,       // 无限画布核心类
+  GridRenderer,         // 网格渲染器
+  CoordinateSystem,     // 坐标系渲染器
+  ShapeManager,         // 图形管理器
+  InteractionManager,   // 交互管理器
+  GridPattern,          // 网格模式类型
+  ShapeType,            // 图形类型
+  InteractionMode       // 交互模式类型
 } from './core';
+
+/**
+ * 导入工具函数
+ */
 import { getContrastingGridColors, getContrastingAxisColors } from './utils';
 
 /**
- * Main application entry point
- * Orchestrates all canvas components and UI interactions
+ * App - 应用程序主类
+ * 
+ * 负责统筹所有画布组件和 UI 交互。
+ * 这是应用程序的入口点，负责：
+ * - 初始化所有核心组件（画布、网格、坐标系、图形等）
+ * - 绑定 UI 事件监听器
+ * - 处理用户交互（工具切换、颜色选择、快捷键等）
+ * - 管理渲染循环
  */
 class App {
-  private canvas: InfiniteCanvas;
-  private gridRenderer: GridRenderer;
-  private coordinateSystem: CoordinateSystem;
-  private shapeManager: ShapeManager;
-  private interactionManager: InteractionManager;
-  private animationFrameId: number | null = null;
-  private canvasElement: HTMLCanvasElement;
+  // 核心组件
+  private canvas: InfiniteCanvas;           // 无限画布实例
+  private gridRenderer: GridRenderer;       // 网格渲染器实例
+  private coordinateSystem: CoordinateSystem;  // 坐标系实例
+  private shapeManager: ShapeManager;       // 图形管理器实例
+  private interactionManager: InteractionManager;  // 交互管理器实例
+  private animationFrameId: number | null = null;  // 动画帧 ID（用于取消动画）
+  private canvasElement: HTMLCanvasElement;  // Canvas DOM 元素
 
-  // UI Elements
-  private patternSelect!: HTMLSelectElement;
-  private zoomDisplay!: HTMLSpanElement;
-  private coordDisplay!: HTMLSpanElement;
-  private modeDisplay!: HTMLSpanElement;
-  private resetBtn!: HTMLButtonElement;
-  private deleteBtn!: HTMLButtonElement;
+  // UI 元素（视图控制）
+  private patternSelect!: HTMLSelectElement;   // 网格模式选择器
+  private zoomDisplay!: HTMLSpanElement;       // 缩放级别显示
+  private coordDisplay!: HTMLSpanElement;      // 坐标显示
+  private modeDisplay!: HTMLSpanElement;       // 模式显示
+  private resetBtn!: HTMLButtonElement;        // 重置视图按钮
+  private deleteBtn!: HTMLButtonElement;       // 删除图形按钮
   
-  // Tool buttons
-  private toolSelectBtn!: HTMLButtonElement;
-  private toolPanBtn!: HTMLButtonElement;
-  private shapeRectBtn!: HTMLButtonElement;
-  private shapeCircleBtn!: HTMLButtonElement;
-  private shapeTriangleBtn!: HTMLButtonElement;
+  // 工具按钮
+  private toolSelectBtn!: HTMLButtonElement;   // 选择工具按钮
+  private toolPanBtn!: HTMLButtonElement;      // 平移工具按钮
+  private shapeRectBtn!: HTMLButtonElement;    // 矩形工具按钮
+  private shapeCircleBtn!: HTMLButtonElement;  // 圆形工具按钮
+  private shapeTriangleBtn!: HTMLButtonElement;  // 三角形工具按钮
   
-  // Color inputs
-  private fillColorInput!: HTMLInputElement;
-  private strokeColorInput!: HTMLInputElement;
-  private fillColorLabel!: HTMLSpanElement;
-  private strokeColorLabel!: HTMLSpanElement;
+  // 颜色选择器
+  private fillColorInput!: HTMLInputElement;    // 填充颜色选择器
+  private strokeColorInput!: HTMLInputElement;  // 描边颜色选择器
+  private fillColorLabel!: HTMLSpanElement;     // 填充颜色标签
+  private strokeColorLabel!: HTMLSpanElement;   // 描边颜色标签
   
-  // Background color
-  private bgColorInput!: HTMLInputElement;
-  private bgColorLabel!: HTMLSpanElement;
-  private backgroundColor = '#ffffff';
+  // 背景颜色
+  private bgColorInput!: HTMLInputElement;      // 背景颜色选择器
+  private bgColorLabel!: HTMLSpanElement;       // 背景颜色标签
+  private backgroundColor = '#ffffff';         // 当前背景颜色（默认白色）
 
+  /**
+   * 构造函数
+   * 初始化所有组件并启动应用
+   */
   constructor() {
-    // Get canvas element
+    // 获取 Canvas 元素
     this.canvasElement = document.getElementById('main-canvas') as HTMLCanvasElement;
     if (!this.canvasElement) {
       throw new Error('Canvas element not found');
     }
 
-    // Initialize core components
+    // 初始化所有核心组件
     this.canvas = new InfiniteCanvas(this.canvasElement);
     this.gridRenderer = new GridRenderer();
     this.coordinateSystem = new CoordinateSystem();
@@ -68,14 +90,18 @@ class App {
       this.canvasElement
     );
 
-    this.getUIElements();
-    this.setupEventListeners();
-    this.canvas.resetView();
-    this.startRenderLoop();
+    this.getUIElements();      // 获取 UI 元素引用
+    this.setupEventListeners();  // 设置事件监听器
+    this.canvas.resetView();     // 重置视图到初始状态
+    this.startRenderLoop();      // 启动渲染循环
   }
 
+  /**
+   * 获取所有 UI 元素的引用
+   * 将 DOM 元素存储为类属性以便后续使用
+   */
   private getUIElements(): void {
-    // View controls
+    // 视图控制
     this.patternSelect = document.getElementById('pattern-select') as HTMLSelectElement;
     this.zoomDisplay = document.getElementById('zoom-display') as HTMLSpanElement;
     this.coordDisplay = document.getElementById('coord-display') as HTMLSpanElement;
@@ -83,104 +109,112 @@ class App {
     this.resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
     this.deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement;
     
-    // Tool buttons
+    // 工具按钮
     this.toolSelectBtn = document.getElementById('tool-select') as HTMLButtonElement;
     this.toolPanBtn = document.getElementById('tool-pan') as HTMLButtonElement;
     this.shapeRectBtn = document.getElementById('shape-rect') as HTMLButtonElement;
     this.shapeCircleBtn = document.getElementById('shape-circle') as HTMLButtonElement;
     this.shapeTriangleBtn = document.getElementById('shape-triangle') as HTMLButtonElement;
     
-    // Color inputs
+    // 颜色选择器
     this.fillColorInput = document.getElementById('fill-color') as HTMLInputElement;
     this.strokeColorInput = document.getElementById('stroke-color') as HTMLInputElement;
     this.fillColorLabel = document.getElementById('fill-color-label') as HTMLSpanElement;
     this.strokeColorLabel = document.getElementById('stroke-color-label') as HTMLSpanElement;
     
-    // Background color
+    // 背景颜色
     this.bgColorInput = document.getElementById('bg-color') as HTMLInputElement;
     this.bgColorLabel = document.getElementById('bg-color-label') as HTMLSpanElement;
   }
 
+  /**
+   * 设置所有事件监听器
+   * 包括 UI 控件、工具按钮、颜色选择器、快捷键等
+   */
   private setupEventListeners(): void {
-    // Pattern selection
+    // 网格模式选择
     this.patternSelect.addEventListener('change', (e) => {
       const pattern = (e.target as HTMLSelectElement).value as GridPattern;
       this.gridRenderer.setPattern(pattern);
     });
 
-    // Reset button
+    // 重置视图按钮
     this.resetBtn.addEventListener('click', () => {
       this.canvas.resetView();
     });
 
-    // Delete button
+    // 删除选中图形按钮
     this.deleteBtn.addEventListener('click', () => {
       this.shapeManager.deleteSelected();
     });
 
-    // Tool buttons
+    // 工具按钮 - 选择模式
     this.toolSelectBtn.addEventListener('click', () => {
       this.setMode('select');
     });
 
+    // 工具按钮 - 平移模式
     this.toolPanBtn.addEventListener('click', () => {
       this.setMode('pan');
     });
 
-    // Shape buttons
+    // 图形按钮 - 矩形
     this.shapeRectBtn.addEventListener('click', () => {
       this.setDrawMode('rectangle');
     });
 
+    // 图形按钮 - 圆形
     this.shapeCircleBtn.addEventListener('click', () => {
       this.setDrawMode('circle');
     });
 
+    // 图形按钮 - 三角形
     this.shapeTriangleBtn.addEventListener('click', () => {
       this.setDrawMode('triangle');
     });
 
-    // Color inputs
+    // 填充颜色选择器
     this.fillColorInput.addEventListener('input', (e) => {
       const color = (e.target as HTMLInputElement).value;
       this.fillColorLabel.textContent = color;
       this.shapeManager.applyStyleToSelected({ fillColor: color });
     });
 
+    // 描边颜色选择器
     this.strokeColorInput.addEventListener('input', (e) => {
       const color = (e.target as HTMLInputElement).value;
       this.strokeColorLabel.textContent = color;
       this.shapeManager.applyStyleToSelected({ strokeColor: color });
     });
 
-    // Background color input
+    // 背景颜色选择器
     this.bgColorInput.addEventListener('input', (e) => {
       const color = (e.target as HTMLInputElement).value;
       this.setBackgroundColor(color);
     });
 
-    // Transform change listener
+    // 画布变换监听器（更新缩放显示）
     this.canvas.setOnTransformChange((transform) => {
       const zoomPercent = (transform.scale * 100).toFixed(0);
       this.zoomDisplay.textContent = `${zoomPercent}%`;
     });
 
-    // Mouse move listener for coordinates
+    // 鼠标移动监听器（更新坐标显示）
     this.canvas.setOnMouseMove((worldPos) => {
       const x = worldPos.x.toFixed(1);
-      const y = (-worldPos.y).toFixed(1);
+      const y = (-worldPos.y).toFixed(1);  // Y 轴反转显示
       this.coordDisplay.textContent = `X: ${x}, Y: ${y}`;
     });
 
-    // Mode change listener
+    // 交互模式变化监听器
     this.interactionManager.setOnModeChange((mode) => {
       this.updateModeUI(mode);
     });
 
-    // Selection change listener
+    // 图形选中变化监听器
     this.shapeManager.setOnSelectionChange((shape) => {
       if (shape) {
-        // Update color inputs to match selected shape
+        // 更新颜色选择器以匹配选中图形的颜色
         this.fillColorInput.value = shape.style.fillColor;
         this.strokeColorInput.value = shape.style.strokeColor;
         this.fillColorLabel.textContent = shape.style.fillColor;
@@ -188,52 +222,68 @@ class App {
       }
     });
 
-    // Keyboard shortcuts
+    // 键盘快捷键
     window.addEventListener('keydown', (e) => {
+      // 在输入框中输入时不处理快捷键
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) {
-        return; // Don't handle shortcuts when typing in inputs
+        return;
       }
       
       switch (e.key.toLowerCase()) {
-        case 'v':
+        case 'v':  // V - 选择模式
           this.setMode('select');
           break;
-        case 'h':
+        case 'h':  // H - 平移模式（Hand tool）
           this.setMode('pan');
           break;
-        case 'r':
+        case 'r':  // R - 矩形
           this.setDrawMode('rectangle');
           break;
-        case 'c':
+        case 'c':  // C - 圆形
           this.setDrawMode('circle');
           break;
-        case 't':
+        case 't':  // T - 三角形
           this.setDrawMode('triangle');
           break;
       }
     });
   }
 
+  /**
+   * 设置交互模式
+   * @param mode - 交互模式（select/pan/draw）
+   */
   private setMode(mode: InteractionMode): void {
     this.interactionManager.setMode(mode);
     this.updateModeUI(mode);
   }
 
+  /**
+   * 设置绘制模式并指定图形类型
+   * @param shapeType - 图形类型（rectangle/circle/triangle）
+   */
   private setDrawMode(shapeType: ShapeType): void {
     this.shapeManager.setShapeType(shapeType);
     this.interactionManager.setMode('draw');
     this.updateModeUI('draw', shapeType);
   }
 
+  /**
+   * 更新 UI 以反映当前模式
+   * 高亮活动工具按钮并更新模式显示
+   * 
+   * @param mode - 当前交互模式
+   * @param shapeType - 可选的图形类型（仅在 draw 模式下）
+   */
   private updateModeUI(mode: InteractionMode, shapeType?: ShapeType): void {
-    // Clear all active states
+    // 清除所有按钮的高亮状态
     this.toolSelectBtn.classList.remove('active');
     this.toolPanBtn.classList.remove('active');
     this.shapeRectBtn.classList.remove('active');
     this.shapeCircleBtn.classList.remove('active');
     this.shapeTriangleBtn.classList.remove('active');
 
-    // Set active state based on mode
+    // 根据模式设置对应按钮为活动状态
     switch (mode) {
       case 'select':
         this.toolSelectBtn.classList.add('active');
@@ -264,18 +314,21 @@ class App {
   }
 
   /**
-   * Set background color and update grid/axis colors for contrast
+   * 设置背景颜色并自动调整网格和坐标轴颜色以保持对比度
+   * 确保网格和坐标系在任何背景下都清晰可见
+   * 
+   * @param color - 背景颜色（CSS 颜色值）
    */
   private setBackgroundColor(color: string): void {
     this.backgroundColor = color;
     this.bgColorLabel.textContent = color;
     this.bgColorInput.value = color;
 
-    // Update grid colors for contrast
+    // 根据背景色计算对比度适合的网格颜色
     const gridColors = getContrastingGridColors(color);
     this.gridRenderer.setColors(gridColors.gridColor, gridColors.subGridColor);
 
-    // Update coordinate system colors for contrast
+    // 根据背景色计算对比度适合的坐标轴颜色
     const axisColors = getContrastingAxisColors(color);
     this.coordinateSystem.setColors(
       axisColors.axisColor,
@@ -284,23 +337,31 @@ class App {
     );
   }
 
+  /**
+   * 渲染主循环
+   * 每帧清空画布并按顺序渲染所有层
+   */
   private render(): void {
     const ctx = this.canvas.getContext();
     const transform = this.canvas.getTransform();
     const bounds = this.canvas.getViewportBounds();
     const size = this.canvas.getCanvasSize();
 
-    // Clear and fill with background color
+    // 清空并填充背景色
     this.canvas.clear();
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, size.width, size.height);
 
-    // Render layers in order
+    // 按顺序渲染各层：网格 → 坐标系 → 图形
     this.gridRenderer.render(ctx, transform, bounds, size);
     this.coordinateSystem.render(ctx, transform, bounds, size);
     this.shapeManager.render(ctx, transform);
   }
 
+  /**
+   * 启动渲染循环
+   * 使用 requestAnimationFrame 实现平滑动画
+   */
   private startRenderLoop(): void {
     const loop = () => {
       this.render();
@@ -309,6 +370,10 @@ class App {
     loop();
   }
 
+  /**
+   * 销毁应用
+   * 停止渲染循环并清理资源
+   */
   public destroy(): void {
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
@@ -316,7 +381,10 @@ class App {
   }
 }
 
-// Initialize app when DOM is ready
+/**
+ * 应用初始化
+ * 当 DOM 加载完成后创建应用实例
+ */
 document.addEventListener('DOMContentLoaded', () => {
   new App();
 });
