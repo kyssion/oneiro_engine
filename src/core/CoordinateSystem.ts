@@ -38,35 +38,6 @@ export class CoordinateSystem {
       ...config
     };
   }
-  // /**
-  //  * 根据缩放级别计算刻度间距
-  //  * 确保刻度间距为整数（1, 2, 5, 10, 20, 50, 100...）
-  //  *
-  //  * @param scale - 当前缩放比例
-  //  * @returns 世界坐标中的刻度间距
-  //  */
-  // private calculateTickSpacing(scale: number): number {
-  //   const targetPixelSpacing = 50; // 目标刻度间距（80 像素）
-  //   const worldSpacing = targetPixelSpacing / scale;  // 转换为世界坐标
-  //
-  //   // 圆整为整数值（1, 2, 5, 10, 20, 50, 100, ...）
-  //   const magnitude = Math.pow(10, Math.floor(Math.log10(worldSpacing)));  // 数量级
-  //   const normalized = worldSpacing / magnitude;  // 归一化到 1-10 范围
-  //
-  //   let niceNormalized: number;
-  //   if (normalized < 1.5) {
-  //     niceNormalized = 1;   // 1, 10, 100, 1000...
-  //   } else if (normalized < 3) {
-  //     niceNormalized = 2;   // 2, 20, 200, 2000...
-  //   } else if (normalized < 7) {
-  //     niceNormalized = 5;   // 5, 50, 500, 5000...
-  //   } else {
-  //     niceNormalized = 10;  // 10, 100, 1000...
-  //   }
-  //
-  //   return niceNormalized * magnitude;
-  // }
-
   /**
    * 格式化数字用于坐标轴显示
    * 小数和大数使用科学记数法，中等数值显示小数
