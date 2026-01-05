@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Point, Transform, InteractionMode, ResizeHandle } from './types';
 import { InfiniteCanvas } from './InfiniteCanvas';
-import { ShapeManager } from './ShapeManager';
+import { ShapeManager } from './shapes/ShapeManager.ts';
 import { Shape } from './shapes';
 
 /**
@@ -25,7 +25,7 @@ export class InteractionManager {
   private canvas: InfiniteCanvas;          // 画布实例
   private shapeManager: ShapeManager;      // 图形管理器
   private canvasElement: HTMLCanvasElement; // Canvas DOM 元素
-  
+
   private mode: InteractionMode = 'select';  // 当前交互模式
   
   // 交互状态标志
@@ -97,6 +97,7 @@ export class InteractionManager {
    * @private
    */
   private handleMouseDown(e: MouseEvent): void {
+    console.log("down one")
     // 仅处理左键
     if (e.button !== 0) return;
 

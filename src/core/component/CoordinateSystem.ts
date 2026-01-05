@@ -1,5 +1,6 @@
-import {Transform, ViewportBounds, CoordinateAxisMode, CoordinateSystemConfig} from './types';
-import {GridRenderer} from "@/core/GridRenderer.ts";
+import {Transform, ViewportBounds, CoordinateAxisMode, CoordinateSystemConfig} from '../types.ts';
+import {GridRenderer} from "@/core/component/GridRenderer.ts";
+import {CanvasComponent} from "@/core/component/CanvasComponent.ts";
 
 /**
  * CoordinateSystem - 坐标系渲染器
@@ -14,12 +15,13 @@ import {GridRenderer} from "@/core/GridRenderer.ts";
  * - 动态颜色：支持根据背景色调整坐标轴颜色
  * - 三种显示模式：固定模式、原点模式、隐藏模式
  */
-export class CoordinateSystem {
+export class CoordinateSystem extends CanvasComponent{
 
   private config: CoordinateSystemConfig;  // 坐标轴配置选项
   private gridRedner: GridRenderer; // 坐标轴需要承接坐标系，所以引用进来
   // 显示模式
   constructor(gridRedner : GridRenderer,config?: Partial<CoordinateSystemConfig>) {
+    super();
     this.gridRedner = gridRedner;
     // 图表坐标轴样式配置对象
     this.config = {
@@ -80,11 +82,7 @@ export class CoordinateSystem {
     if (this.config.displayMode === 'hidden') {
       return;
     }
-
-
-
     const [tickSpacing,_] = this.gridRedner.getGirdSize();
-    
     // 计算原点在屏幕上的位置
     const originX = transform.offsetX;
     const originY = transform.offsetY;

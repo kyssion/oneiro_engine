@@ -1,4 +1,5 @@
-import { Transform, GridConfig, GridPattern, ViewportBounds } from './types';
+import { Transform, GridConfig, GridPattern, ViewportBounds } from '../types.ts';
+import {CanvasComponent} from "@/core/component/CanvasComponent.ts";
 
 /**
  * GridRenderer - 网格渲染器
@@ -12,13 +13,14 @@ import { Transform, GridConfig, GridPattern, ViewportBounds } from './types';
  * - 双模式：支持线条网格和点状网格两种样式
  * - 性能优化：仅绘制可见区域的网格，限制点数量
  */
-export class GridRenderer {
+export class GridRenderer extends CanvasComponent{
   private config: GridConfig;  // 网格配置
   /**
    * 构造函数
    * @param config - 可选的网格配置
    */
   constructor(config?: Partial<GridConfig>) {
+    super();
     this.config = {
       pattern: 'grid',                            // 默认使用线条网格
       baseGridSize: 50,                           // 基础网格大小 50 单位

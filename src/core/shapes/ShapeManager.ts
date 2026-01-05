@@ -1,5 +1,5 @@
-import { Point, Transform, ShapeType, ShapeStyle } from './types';
-import { Shape, Rectangle, Circle, Triangle } from './shapes';
+import { Point, Transform, ShapeType, ShapeStyle } from '../types.ts';
+import { Shape, Rectangle, Circle, Triangle } from './index.ts';
 
 /**
  * ShapeManager - 图形管理器

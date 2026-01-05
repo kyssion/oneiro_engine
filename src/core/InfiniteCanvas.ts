@@ -153,6 +153,7 @@ export class InfiniteCanvas {
    * 仅在中键或启用平移模式时开始拖动
    */
   private handleMouseDown(e: MouseEvent): void {
+    console.log("down two")
     // 仅中键（button=1）或左键+平移模式时拖动
     if (e.button === 1 || (e.button === 0 && this.isPanEnabled)) {
       this.isDragging = true;
@@ -425,8 +426,9 @@ export class InfiniteCanvas {
   public resetView(): void {
     this.transform = { scale: 1, offsetX: 0, offsetY: 0 };
     // 将原点放置在左上角（留出一定边距给 UI 元素）
-    this.transform.offsetX = 80;   // 左侧工具栏宽度 + 边距
-    this.transform.offsetY = 50;   // 顶部边距
+    // todo 这里配置的默认值
+    this.transform.offsetX = 65;   // 左侧工具栏宽度 + 边距
+    this.transform.offsetY = 30;   // 顶部边距
     this.notifyTransformChange();
   }
 
