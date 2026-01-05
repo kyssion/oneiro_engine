@@ -1,5 +1,4 @@
 import { Transform, GridConfig, GridPattern, ViewportBounds } from './types';
-import {InfiniteCanvas} from "@/core/InfiniteCanvas.ts";
 
 /**
  * GridRenderer - 网格渲染器
@@ -15,14 +14,11 @@ import {InfiniteCanvas} from "@/core/InfiniteCanvas.ts";
  */
 export class GridRenderer {
   private config: GridConfig;  // 网格配置
-  private infiniteCanvas: InfiniteCanvas;
   /**
    * 构造函数
-   * @param infiniteCanvas - 画布核心类
    * @param config - 可选的网格配置
    */
-  constructor(infiniteCanvas: InfiniteCanvas,config?: Partial<GridConfig>) {
-    this.infiniteCanvas = infiniteCanvas;
+  constructor(config?: Partial<GridConfig>) {
     this.config = {
       pattern: 'grid',                            // 默认使用线条网格
       baseGridSize: 50,                           // 基础网格大小 50 单位
@@ -36,6 +32,8 @@ export class GridRenderer {
 
       mainLineWidth: 1,
       subLineWidth: 0.5,
+      mainSizeNow: 0,
+      subSizeNow: 0,
       ...config,  // 合并用户配置
     };
   }
@@ -67,6 +65,8 @@ export class GridRenderer {
     
     // 当缩放大于 0.5 且小数部分在合适范围时显示次网格
     const showSub = scale > 0.1 && fractional > -0.1 || true; // todo 现在次网格永远显示
+    this.config.mainSizeNow = mainSize;
+    this.config.subSizeNow = subSize;
     return { mainSize, subSize, showSub };
   }
 
@@ -299,5 +299,9 @@ export class GridRenderer {
   public setColors(gridColor: string, subGridColor: string): void {
     this.config.gridColor = gridColor;
     this.config.subGridColor = subGridColor;
+  }
+
+  public getGirdSize(): [mainsize:number,subSize:number] {
+    return [this.config.mainSizeNow,this.config.subSizeNow];
   }
 }

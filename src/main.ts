@@ -87,8 +87,8 @@ class App {
 
     // 初始化所有核心组件
     this.canvas = new InfiniteCanvas(this.canvasElement);
-    this.gridRenderer = new GridRenderer(this.canvas);
-    this.coordinateSystem = new CoordinateSystem();
+    this.gridRenderer = new GridRenderer();
+    this.coordinateSystem = new CoordinateSystem(this.gridRenderer);
     this.shapeManager = new ShapeManager();
     this.interactionManager = new InteractionManager(
       this.canvas,

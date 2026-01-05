@@ -1,4 +1,5 @@
-import { Transform, ViewportBounds, CoordinateAxisMode } from './types';
+import {Transform, ViewportBounds, CoordinateAxisMode, CoordinateSystemConfig} from './types';
+import {GridRenderer} from "@/core/GridRenderer.ts";
 
 /**
  * CoordinateSystem - 坐标系渲染器
@@ -14,49 +15,57 @@ import { Transform, ViewportBounds, CoordinateAxisMode } from './types';
  * - 三种显示模式：固定模式、原点模式、隐藏模式
  */
 export class CoordinateSystem {
-  // 颜色配置
-  private axisColor = 'rgba(100, 100, 100, 0.9)';   // 坐标轴主线颜色
-  private tickColor = 'rgba(80, 80, 80, 0.8)';     // 刻度线颜色
-  private labelColor = 'rgba(60, 60, 60, 1)';      // 数字标签颜色
-  private fixedModeBackgroundColor = 'rgba(255, 255, 255, 0.9)';  // 固定模式背景颜色
-  
-  // 样式配置
-  private axisWidth = 2;              // 坐标轴线宽（像素）
-  private tickLength = 6;             // 刻度线长度（像素）
-  private labelFont = '11px sans-serif';  // 标签字体
-  private labelPadding = 4;           // 标签与坐标轴的间距
-  
-  // 显示模式
-  private displayMode: CoordinateAxisMode = 'origin';  // 默认为原点模式
 
-  /**
-   * 根据缩放级别计算刻度间距
-   * 确保刻度间距为整数（1, 2, 5, 10, 20, 50, 100...）
-   * 
-   * @param scale - 当前缩放比例
-   * @returns 世界坐标中的刻度间距
-   */
-  private calculateTickSpacing(scale: number): number {
-    const targetPixelSpacing = 50; // 目标刻度间距（80 像素）
-    const worldSpacing = targetPixelSpacing / scale;  // 转换为世界坐标
-    
-    // 圆整为整数值（1, 2, 5, 10, 20, 50, 100, ...）
-    const magnitude = Math.pow(10, Math.floor(Math.log10(worldSpacing)));  // 数量级
-    const normalized = worldSpacing / magnitude;  // 归一化到 1-10 范围
-    
-    let niceNormalized: number;
-    if (normalized < 1.5) {
-      niceNormalized = 1;   // 1, 10, 100, 1000...
-    } else if (normalized < 3) {
-      niceNormalized = 2;   // 2, 20, 200, 2000...
-    } else if (normalized < 7) {
-      niceNormalized = 5;   // 5, 50, 500, 5000...
-    } else {
-      niceNormalized = 10;  // 10, 100, 1000...
-    }
-    
-    return niceNormalized * magnitude;
+  private config: CoordinateSystemConfig;  // 坐标轴配置选项
+  private gridRedner: GridRenderer; // 坐标轴需要承接坐标系，所以引用进来
+  // 显示模式
+  constructor(gridRedner : GridRenderer,config?: Partial<CoordinateSystemConfig>) {
+    this.gridRedner = gridRedner;
+    // 图表坐标轴样式配置对象
+    this.config = {
+      // 颜色配置
+      axisColor: 'rgba(100, 100, 100, 0.9)',             // 坐标轴主线颜色
+      tickColor: 'rgba(80, 80, 80, 0.8)',               // 刻度线颜色
+      labelColor: 'rgba(60, 60, 60, 1)',                // 数字标签颜色
+      fixedModeBackgroundColor: 'rgba(255, 255, 255, 0.9)', // 固定模式背景颜色
+
+      // 样式配置
+      axisWidth: 2,                                     // 坐标轴线宽（像素）
+      tickLength: 6,                                    // 刻度线长度（像素）
+      labelFont: '11px sans-serif',                     // 标签字体
+      labelPadding: 4,                                  // 标签与坐标轴的间距（像素）
+      displayMode:  'origin',                           // 默认为原点模式
+      ...config
+    };
   }
+  // /**
+  //  * 根据缩放级别计算刻度间距
+  //  * 确保刻度间距为整数（1, 2, 5, 10, 20, 50, 100...）
+  //  *
+  //  * @param scale - 当前缩放比例
+  //  * @returns 世界坐标中的刻度间距
+  //  */
+  // private calculateTickSpacing(scale: number): number {
+  //   const targetPixelSpacing = 50; // 目标刻度间距（80 像素）
+  //   const worldSpacing = targetPixelSpacing / scale;  // 转换为世界坐标
+  //
+  //   // 圆整为整数值（1, 2, 5, 10, 20, 50, 100, ...）
+  //   const magnitude = Math.pow(10, Math.floor(Math.log10(worldSpacing)));  // 数量级
+  //   const normalized = worldSpacing / magnitude;  // 归一化到 1-10 范围
+  //
+  //   let niceNormalized: number;
+  //   if (normalized < 1.5) {
+  //     niceNormalized = 1;   // 1, 10, 100, 1000...
+  //   } else if (normalized < 3) {
+  //     niceNormalized = 2;   // 2, 20, 200, 2000...
+  //   } else if (normalized < 7) {
+  //     niceNormalized = 5;   // 5, 50, 500, 5000...
+  //   } else {
+  //     niceNormalized = 10;  // 10, 100, 1000...
+  //   }
+  //
+  //   return niceNormalized * magnitude;
+  // }
 
   /**
    * 格式化数字用于坐标轴显示
@@ -97,11 +106,13 @@ export class CoordinateSystem {
     canvasSize: { width: number; height: number }
   ): void {
     // 隐藏模式：不渲染任何内容
-    if (this.displayMode === 'hidden') {
+    if (this.config.displayMode === 'hidden') {
       return;
     }
 
-    const tickSpacing = this.calculateTickSpacing(transform.scale);
+
+
+    const [tickSpacing,_] = this.gridRedner.getGirdSize();
     
     // 计算原点在屏幕上的位置
     const originX = transform.offsetX;
@@ -109,7 +120,7 @@ export class CoordinateSystem {
 
     ctx.save();
 
-    if (this.displayMode === 'fixed') {
+    if (this.config.displayMode === 'fixed') {
       // 固定模式：刻度固定在画布边缘
       this.renderFixedMode(ctx, transform, bounds, canvasSize, tickSpacing);
     } else {
@@ -159,19 +170,19 @@ export class CoordinateSystem {
     tickSpacing: number
   ): void {
     // 绘制顶部坐标轴背景（确保数字可见）
-    ctx.fillStyle = this.fixedModeBackgroundColor;
+    ctx.fillStyle = this.config.fixedModeBackgroundColor;
     ctx.fillRect(0, 0, canvasSize.width, 22);
     
     // 绘制底部边框线
-    ctx.strokeStyle = this.tickColor;
+    ctx.strokeStyle = this.config.tickColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, 22);
     ctx.lineTo(canvasSize.width, 22);
     ctx.stroke();
 
-    ctx.fillStyle = this.labelColor;
-    ctx.font = this.labelFont;
+    ctx.fillStyle = this.config.labelColor;
+    ctx.font = this.config.labelFont;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
 
@@ -180,7 +191,7 @@ export class CoordinateSystem {
     const endX = Math.ceil(bounds.right / tickSpacing) * tickSpacing;
 
     // 绘制刻度线
-    ctx.strokeStyle = this.tickColor;
+    ctx.strokeStyle = this.config.tickColor;
     ctx.beginPath();
     for (let x = startX; x <= endX; x += tickSpacing) {
       const screenX = x * transform.scale + transform.offsetX;
@@ -212,19 +223,19 @@ export class CoordinateSystem {
     tickSpacing: number
   ): void {
     // 绘制左侧坐标轴背景（确保数字可见）
-    ctx.fillStyle = this.fixedModeBackgroundColor;
+    ctx.fillStyle = this.config.fixedModeBackgroundColor;
     ctx.fillRect(0, 22, 55, canvasSize.height - 22);
     
     // 绘制右侧边框线
-    ctx.strokeStyle = this.tickColor;
+    ctx.strokeStyle = this.config.tickColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(55, 22);
     ctx.lineTo(55, canvasSize.height);
     ctx.stroke();
 
-    ctx.fillStyle = this.labelColor;
-    ctx.font = this.labelFont;
+    ctx.fillStyle = this.config.labelColor;
+    ctx.font = this.config.labelFont;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
 
@@ -233,7 +244,7 @@ export class CoordinateSystem {
     const endY = Math.ceil(bounds.bottom / tickSpacing) * tickSpacing;
 
     // 绘制刻度线
-    ctx.strokeStyle = this.tickColor;
+    ctx.strokeStyle = this.config.tickColor;
     ctx.beginPath();
     for (let y = startY; y <= endY; y += tickSpacing) {
       const screenY = y * transform.scale + transform.offsetY;
@@ -254,9 +265,9 @@ export class CoordinateSystem {
     }
 
     // 绘制左上角标签（表示坐标系）
-    ctx.fillStyle = this.fixedModeBackgroundColor;
+    ctx.fillStyle = this.config.fixedModeBackgroundColor;
     ctx.fillRect(0, 0, 55, 22);
-    ctx.fillStyle = this.labelColor;
+    ctx.fillStyle = this.config.labelColor;
     ctx.font = 'bold 10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -276,8 +287,8 @@ export class CoordinateSystem {
     originY: number,
     canvasSize: { width: number; height: number }
   ): void {
-    ctx.strokeStyle = this.axisColor;
-    ctx.lineWidth = this.axisWidth;
+    ctx.strokeStyle = this.config.axisColor;
+    ctx.lineWidth = this.config.axisWidth;
 
     ctx.beginPath();
 
@@ -315,9 +326,9 @@ export class CoordinateSystem {
     tickSpacing: number,
     originY: number
   ): void {
-    ctx.strokeStyle = this.tickColor;
-    ctx.fillStyle = this.labelColor;
-    ctx.font = this.labelFont;
+    ctx.strokeStyle = this.config.tickColor;
+    ctx.fillStyle = this.config.labelColor;
+    ctx.font = this.config.labelFont;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     ctx.lineWidth = 1;
@@ -333,20 +344,20 @@ export class CoordinateSystem {
 
     if (originY < 0) {
       // X 轴在视口上方 - 在顶部显示标签
-      labelY = this.labelPadding;
+      labelY = this.config.labelPadding;
       tickY1 = 0;
-      tickY2 = this.tickLength;
+      tickY2 = this.config.tickLength;
     } else if (originY > canvasSize.height) {
       // X 轴在视口下方 - 在底部显示标签
       labelY = canvasSize.height - 15;
-      tickY1 = canvasSize.height - this.tickLength;
+      tickY1 = canvasSize.height - this.config.tickLength;
       tickY2 = canvasSize.height;
       ctx.textBaseline = 'bottom';
     } else {
       // X 轴可见 - 在坐标轴旁显示标签
-      labelY = originY + this.labelPadding;
-      tickY1 = originY - this.tickLength / 2;
-      tickY2 = originY + this.tickLength / 2;
+      labelY = originY + this.config.labelPadding;
+      tickY1 = originY - this.config.tickLength / 2;
+      tickY2 = originY + this.config.tickLength / 2;
     }
 
     ctx.beginPath();
@@ -397,9 +408,9 @@ export class CoordinateSystem {
     tickSpacing: number,
     originX: number
   ): void {
-    ctx.strokeStyle = this.tickColor;
-    ctx.fillStyle = this.labelColor;
-    ctx.font = this.labelFont;
+    ctx.strokeStyle = this.config.tickColor;
+    ctx.fillStyle = this.config.labelColor;
+    ctx.font = this.config.labelFont;
     ctx.textBaseline = 'middle';
     ctx.lineWidth = 1;
 
@@ -414,21 +425,21 @@ export class CoordinateSystem {
 
     if (originX < 0) {
       // Y 轴在视口左侧 - 在左边显示标签
-      labelX = this.labelPadding;
+      labelX = this.config.labelPadding;
       tickX1 = 0;
-      tickX2 = this.tickLength;
+      tickX2 = this.config.tickLength;
       ctx.textAlign = 'left';
     } else if (originX > canvasSize.width) {
       // Y 轴在视口右侧 - 在右边显示标签
-      labelX = canvasSize.width - this.labelPadding;
-      tickX1 = canvasSize.width - this.tickLength;
+      labelX = canvasSize.width - this.config.labelPadding;
+      tickX1 = canvasSize.width - this.config.tickLength;
       tickX2 = canvasSize.width;
       ctx.textAlign = 'right';
     } else {
       // Y 轴可见 - 在坐标轴左侧显示标签
-      labelX = originX - this.labelPadding;
-      tickX1 = originX - this.tickLength / 2;
-      tickX2 = originX + this.tickLength / 2;
+      labelX = originX - this.config.labelPadding;
+      tickX1 = originX - this.config.tickLength / 2;
+      tickX2 = originX + this.config.tickLength / 2;
       ctx.textAlign = 'right';
     }
 
@@ -481,14 +492,14 @@ export class CoordinateSystem {
     if (originX < -20 || originX > canvasSize.width + 20) return;
     if (originY < -20 || originY > canvasSize.height + 20) return;
 
-    ctx.fillStyle = this.labelColor;
+    ctx.fillStyle = this.config.labelColor;
     ctx.font = 'bold 11px sans-serif';  // 原点标签使用粗体
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
 
     // 确保标签不超出画布边界
-    const labelX = Math.max(15, Math.min(originX - this.labelPadding, canvasSize.width - 15));
-    const labelY = Math.max(0, Math.min(originY + this.labelPadding, canvasSize.height - 15));
+    const labelX = Math.max(15, Math.min(originX - this.config.labelPadding, canvasSize.width - 15));
+    const labelY = Math.max(0, Math.min(originY + this.config.labelPadding, canvasSize.height - 15));
 
     ctx.fillText('0', labelX, labelY);
   }
@@ -504,9 +515,9 @@ export class CoordinateSystem {
    * @param label - 数字标签颜色
    */
   public setColors(axis: string, tick: string, label: string): void {
-    this.axisColor = axis;
-    this.tickColor = tick;
-    this.labelColor = label;
+    this.config.axisColor = axis;
+    this.config.tickColor = tick;
+    this.config.labelColor = label;
   }
 
   /**
@@ -516,7 +527,7 @@ export class CoordinateSystem {
    * @param color - 背景颜色（带透明度的 CSS 颜色值）
    */
   public setFixedModeBackgroundColor(color: string): void {
-    this.fixedModeBackgroundColor = color;
+    this.config.fixedModeBackgroundColor = color;
   }
 
   /**
@@ -524,7 +535,7 @@ export class CoordinateSystem {
    * @param width - 线宽（像素）
    */
   public setAxisWidth(width: number): void {
-    this.axisWidth = width;
+    this.config.axisWidth = width;
   }
 
   /**
@@ -532,7 +543,7 @@ export class CoordinateSystem {
    * @param mode - 显示模式（fixed/origin/hidden）
    */
   public setDisplayMode(mode: CoordinateAxisMode): void {
-    this.displayMode = mode;
+    this.config.displayMode = mode;
   }
 
   /**
@@ -540,6 +551,6 @@ export class CoordinateSystem {
    * @returns 当前显示模式
    */
   public getDisplayMode(): CoordinateAxisMode {
-    return this.displayMode;
+    return this.config.displayMode;
   }
 }

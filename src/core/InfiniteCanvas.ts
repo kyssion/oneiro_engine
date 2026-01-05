@@ -53,8 +53,8 @@ export class InfiniteCanvas {
 
     // 合并默认配置和用户配置
     this.config = {
-      minScale: 0.01,           // 最小缩放 1%
-      maxScale: 100,            // 最大缩放 10000%
+      minScale: 0.1,           // 最小缩放 1%
+      maxScale: 10,            // 最大缩放 10000%
       zoomSensitivity: 0.001,   // 缩放灵敏度
       ...config,
     };

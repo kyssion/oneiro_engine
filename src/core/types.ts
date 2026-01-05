@@ -47,6 +47,30 @@ export interface GridConfig {
 
   subLineWidth: number; // 次网格线条长度
   mainLineWidth: number; // 主网格线条长度
+
+  mainSizeNow: number; // 缩放之后当前的一个网格的宽度
+  subSizeNow: number; // 缩放之后当前一个子网格的大小
+}
+
+
+/**
+ * 坐标轴配置选线
+ * 控制坐标轴的行文
+ */
+export interface CoordinateSystemConfig {
+  // 颜色配置
+  axisColor: string;                  // 坐标轴主线颜色
+  tickColor: string;                  // 刻度线颜色
+  labelColor: string;                 // 数字标签颜色
+  fixedModeBackgroundColor: string;   // 固定模式背景颜色
+
+  // 样式配置
+  axisWidth: number;                  // 坐标轴线宽（像素）
+  tickLength: number;                 // 刻度线长度（像素）
+  labelFont: string;                  // 标签字体
+  labelPadding: number;               // 标签与坐标轴的间距
+
+  displayMode: CoordinateAxisMode     // 坐标轴配置选项
 }
 
 /**
