@@ -42,6 +42,11 @@ export interface GridConfig {
   gridColor: string;         // 主网格颜色（CSS 颜色值）
   subGridColor: string;      // 次网格颜色（CSS 颜色值）
   dotRadius: number;         // 点的半径（仅用于点状网格）
+  NumberOfIntervals: number; // 每一个网格中间空白格的数量
+  minInterValsSize: number; // 渲染的时候网格数量的最小要求
+
+  subLineWidth: number; // 次网格线条长度
+  mainLineWidth: number; // 主网格线条长度
 }
 
 /**

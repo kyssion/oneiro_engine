@@ -37,7 +37,7 @@ export class CoordinateSystem {
    * @returns 世界坐标中的刻度间距
    */
   private calculateTickSpacing(scale: number): number {
-    const targetPixelSpacing = 80; // 目标刻度间距（80 像素）
+    const targetPixelSpacing = 50; // 目标刻度间距（80 像素）
     const worldSpacing = targetPixelSpacing / scale;  // 转换为世界坐标
     
     // 圆整为整数值（1, 2, 5, 10, 20, 50, 100, ...）

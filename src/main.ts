@@ -87,7 +87,7 @@ class App {
 
     // 初始化所有核心组件
     this.canvas = new InfiniteCanvas(this.canvasElement);
-    this.gridRenderer = new GridRenderer();
+    this.gridRenderer = new GridRenderer(this.canvas);
     this.coordinateSystem = new CoordinateSystem();
     this.shapeManager = new ShapeManager();
     this.interactionManager = new InteractionManager(
@@ -440,7 +440,6 @@ class App {
     const transform = this.canvas.getTransform();
     const bounds = this.canvas.getViewportBounds();
     const size = this.canvas.getCanvasSize();
-
     // 清空并填充背景色
     this.canvas.clear();
     ctx.fillStyle = this.backgroundColor;

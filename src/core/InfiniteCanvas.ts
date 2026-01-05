@@ -109,7 +109,7 @@ export class InfiniteCanvas {
     // 鼠标释放事件
     this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
     // 鼠标离开画布事件
-    this.canvas.addEventListener('mouseleave', this.handleMouseUp.bind(this));
+    this.canvas.addEventListener('mouseleave', this.handleMouseOut.bind(this));
     
     // 触摸事件支持
     this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
@@ -157,7 +157,7 @@ export class InfiniteCanvas {
     if (e.button === 1 || (e.button === 0 && this.isPanEnabled)) {
       this.isDragging = true;
       this.lastMousePos = { x: e.clientX, y: e.clientY };
-      this.canvas.style.cursor = 'grabbing';  // 改变鼠标样式
+      this.canvas.style.cursor = 'grabbing';  // 改变鼠标样式 todo 这里没有生效
     }
   }
 
@@ -178,6 +178,7 @@ export class InfiniteCanvas {
 
     // 如果正在拖动，平移画布
     if (this.isDragging) {
+      // 都是使用相对于屏幕的数据，来确定偏移量
       const dx = e.clientX - this.lastMousePos.x;  // X 方向移动距离
       const dy = e.clientY - this.lastMousePos.y;  // Y 方向移动距离
 
@@ -199,6 +200,18 @@ export class InfiniteCanvas {
       this.canvas.style.cursor = 'grab';
     }
   }
+
+  /**
+   * 处理鼠标离开画布事件
+   * 停止拖动并恢复鼠标样式
+   */
+  private handleMouseOut(): void {
+    this.isDragging = false;
+    if (this.isPanEnabled) {
+      this.canvas.style.cursor = 'grab';
+    }
+  }
+
 
   // 触摸事件相关的私有变量
   private lastTouchDistance = 0;                // 上次双指距离
@@ -245,7 +258,7 @@ export class InfiniteCanvas {
       const center = this.getTouchCenter(e.touches);
       
       // 根据双指距离变化计算缩放因子
-      const zoomFactor = distance / this.lastTouchDistance;
+      const zoomFactor = distance / this.lastTouchDistance; // 相当于上一次扩大了多少倍
       const newScale = Math.max(
         this.config.minScale,
         Math.min(this.config.maxScale, this.transform.scale * zoomFactor)
@@ -315,7 +328,7 @@ export class InfiniteCanvas {
   }
 
   // ==================== 公共 API ====================
-  
+
   /**
    * 屏幕坐标转世界坐标
    * 将画布上的像素坐标转换为世界坐标系中的坐标
@@ -359,7 +372,7 @@ export class InfiniteCanvas {
     const rect = this.canvas.getBoundingClientRect();
     const topLeft = this.screenToWorld({ x: 0, y: 0 });
     const bottomRight = this.screenToWorld({ x: rect.width, y: rect.height });
-    
+
     return {
       left: topLeft.x,
       top: topLeft.y,

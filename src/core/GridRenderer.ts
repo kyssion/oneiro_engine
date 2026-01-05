@@ -1,4 +1,5 @@
 import { Transform, GridConfig, GridPattern, ViewportBounds } from './types';
+import {InfiniteCanvas} from "@/core/InfiniteCanvas.ts";
 
 /**
  * GridRenderer - 网格渲染器
@@ -14,20 +15,27 @@ import { Transform, GridConfig, GridPattern, ViewportBounds } from './types';
  */
 export class GridRenderer {
   private config: GridConfig;  // 网格配置
-
+  private infiniteCanvas: InfiniteCanvas;
   /**
    * 构造函数
+   * @param infiniteCanvas - 画布核心类
    * @param config - 可选的网格配置
    */
-  constructor(config?: Partial<GridConfig>) {
+  constructor(infiniteCanvas: InfiniteCanvas,config?: Partial<GridConfig>) {
+    this.infiniteCanvas = infiniteCanvas;
     this.config = {
       pattern: 'grid',                            // 默认使用线条网格
       baseGridSize: 50,                           // 基础网格大小 50 单位
       minGridSize: 10,                            // 最小网格 10 单位
-      maxGridSize: 200,                           // 最大网格 200 单位
+      maxGridSize: 2000,                           // 最大网格 200 单位
       gridColor: 'rgba(200, 200, 200, 0.8)',     // 主网格颜色
       subGridColor: 'rgba(220, 220, 220, 0.5)',  // 次网格颜色（更淡）
       dotRadius: 1.5,                             // 点的半径
+      NumberOfIntervals: 5,
+      minInterValsSize: 5 , // 渲染的时候网格数量的最小要求
+
+      mainLineWidth: 1,
+      subLineWidth: 0.5,
       ...config,  // 合并用户配置
     };
   }
@@ -45,22 +53,20 @@ export class GridRenderer {
     // 使用 log2 计算网格级别，实现 2 的幂次调整
     const logScale = Math.log2(scale);
     const gridLevel = Math.floor(logScale);
-    
-    // 计算小数部分，用于平滑过渡
-    const fractional = logScale - gridLevel;
-    
     // 主网格大小与缩放级别成反比
     let mainSize = baseSize * Math.pow(2, -gridLevel);
+
+    // 计算小数部分，用于平滑过渡
+    const fractional = logScale - gridLevel;
     
     // 限制在合理范围内
     mainSize = Math.max(this.config.minGridSize, Math.min(this.config.maxGridSize, mainSize));
     
-    // 次网格始终为主网格的 1/5
-    const subSize = mainSize / 5;
+    // 次网格始终为主网格的 1/NumberOfIntervals 数量
+    const subSize = mainSize / this.config.NumberOfIntervals;
     
     // 当缩放大于 0.5 且小数部分在合适范围时显示次网格
-    const showSub = scale > 0.5 && fractional > -0.5;
-    
+    const showSub = scale > 0.1 && fractional > -0.1 || true; // todo 现在次网格永远显示
     return { mainSize, subSize, showSub };
   }
 
@@ -83,17 +89,17 @@ export class GridRenderer {
     const screenMainSize = mainSize * transform.scale;
     const screenSubSize = subSize * transform.scale;
 
-    // 先绘制次网格（在主网格之下）
-    if (showSub && screenSubSize > 5) {
+    // 先绘制次网格（在主网格之下） 当网格满足足够的数量的时候绘制
+    if (showSub && screenSubSize > this.config.minInterValsSize) {
       ctx.strokeStyle = this.config.subGridColor;
-      ctx.lineWidth = 0.5;  // 次网格线更细
+      ctx.lineWidth = this.config.subLineWidth;  // 次网格线更细
       this.drawGridLines(ctx, transform, bounds, canvasSize, subSize);
     }
 
     // 绘制主网格
-    if (screenMainSize > 5) {  // 仅当网格足够大时绘制
+    if (screenMainSize > this.config.minInterValsSize) {  // 仅当网格满足足够的数量的时候绘制
       ctx.strokeStyle = this.config.gridColor;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = this.config.mainLineWidth;
       this.drawGridLines(ctx, transform, bounds, canvasSize, mainSize);
     }
   }
