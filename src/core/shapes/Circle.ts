@@ -12,12 +12,13 @@ export class Circle extends Shape {
    * 构造函数
    * @param x - X 坐标（外接矩形左上角）
    * @param y - Y 坐标（外接矩形左上角）
+   * @param z - Z 层级
    * @param width - 宽度（椭圆水平直径）
    * @param height - 高度（椭圆垂直直径）
    * @param style - 可选的样式
    */
-  constructor(x: number, y: number, width: number, height: number, style?: Partial<ShapeStyle>) {
-    super('circle', x, y, width, height, style);
+  constructor(x: number, y: number,z:number, width: number, height: number, style?: Partial<ShapeStyle>) {
+    super('circle', x, y,z, width, height, style);
   }
 
   /**

@@ -1,4 +1,5 @@
 import { Point, Transform, BoundingBox, ShapeStyle, ShapeType, ShapeData, ResizeHandle, HandleInfo } from '@/core';
+import {Render} from "@/core/Render.ts";
 
 /**
  * 生成图形的唯一 ID
@@ -21,7 +22,7 @@ export function generateId(): string {
  * - 选中状态：显示边界框和调整控制点
  * - 调整控制点：8 个控制点支持图形拉伸
  */
-export abstract class Shape {
+export abstract class Shape extends Render{
   public id: string;            // 唯一标识符
   public type: ShapeType;       // 图形类型
   
@@ -31,6 +32,7 @@ export abstract class Shape {
   public width: number;         // 宽度
   public height: number;        // 高度
   public rotation: number = 0;  // 旋转角度（弧度，暂未实现）
+  public z: number;             // 层级
   
   // 样式
   public style: ShapeStyle;     // 颜色、描边、透明度等
@@ -43,15 +45,18 @@ export abstract class Shape {
    * @param type - 图形类型
    * @param x - X 坐标
    * @param y - Y 坐标
+   * @param z - Z 层级
    * @param width - 宽度
    * @param height - 高度
    * @param style - 可选的样式配置
    */
-  constructor(type: ShapeType, x: number, y: number, width: number, height: number, style?: Partial<ShapeStyle>) {
+  constructor(type: ShapeType, x: number, y: number,z: number, width: number, height: number, style?: Partial<ShapeStyle>) {
+    super();
     this.id = generateId();
     this.type = type;
     this.x = x;
     this.y = y;
+    this.z = z;
     this.width = width;
     this.height = height;
     this.style = {

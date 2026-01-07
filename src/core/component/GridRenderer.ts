@@ -1,5 +1,5 @@
 import { Transform, GridConfig, GridPattern, ViewportBounds } from '../types.ts';
-import {RenderComponent} from "@/core/component/RenderComponent.ts";
+import {Render} from "@/core/Render.ts";
 
 /**
  * GridRenderer - 网格渲染器
@@ -13,7 +13,7 @@ import {RenderComponent} from "@/core/component/RenderComponent.ts";
  * - 双模式：支持线条网格和点状网格两种样式
  * - 性能优化：仅绘制可见区域的网格，限制点数量
  */
-export class GridRenderer extends RenderComponent{
+export class GridRenderer extends Render{
   private config: GridConfig;  // 网格配置
   /**
    * 构造函数

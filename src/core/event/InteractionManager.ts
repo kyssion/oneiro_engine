@@ -1,8 +1,8 @@
 // @ts-ignore
-import { Point, Transform, InteractionMode, ResizeHandle } from './types';
-import { InfiniteCanvas } from './InfiniteCanvas';
-import { ShapeManager } from './shapes/ShapeManager.ts';
-import { Shape } from './shapes';
+import { Point, Transform, InteractionMode, ResizeHandle } from '../types.ts';
+import { InfiniteCanvas } from '../InfiniteCanvas.ts';
+import { ShapeManager } from '../shapes/ShapeManager.ts';
+import { Shape } from '../shapes';
 
 /**
  * InteractionManager - 交互管理器
@@ -170,6 +170,7 @@ export class InteractionManager {
     this.drawingShape = this.shapeManager.createShape(
       world.x,
       world.y,
+      0,
       1,
       1
     );

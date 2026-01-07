@@ -1,6 +1,6 @@
 import {Transform, ViewportBounds, CoordinateAxisMode, CoordinateSystemConfig} from '../types.ts';
 import {GridRenderer} from "@/core/component/GridRenderer.ts";
-import {RenderComponent} from "@/core/component/RenderComponent.ts";
+import {Render} from "@/core/Render.ts";
 
 /**
  * CoordinateSystem - 坐标系渲染器
@@ -15,7 +15,7 @@ import {RenderComponent} from "@/core/component/RenderComponent.ts";
  * - 动态颜色：支持根据背景色调整坐标轴颜色
  * - 三种显示模式：固定模式、原点模式、隐藏模式
  */
-export class CoordinateSystem extends RenderComponent{
+export class CoordinateSystem extends Render{
 
   private config: CoordinateSystemConfig;  // 坐标轴配置选项
   private gridRedner: GridRenderer; // 坐标轴需要承接坐标系，所以引用进来

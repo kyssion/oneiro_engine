@@ -1,4 +1,5 @@
 import { Point, Transform, CanvasConfig, ViewportBounds } from './types';
+import {CanvasEvent} from "@/core/CanvasEvent.ts";
 
 /**
  * InfiniteCanvas - 无限画布核心类
@@ -15,7 +16,7 @@ import { Point, Transform, CanvasConfig, ViewportBounds } from './types';
  * - 触摸支持：单指拖动、双指缩放和平移
  * - 坐标转换：屏幕坐标 ↔ 世界坐标
  */
-export class InfiniteCanvas {
+export class InfiniteCanvas extends CanvasEvent{
   // Canvas 元素和绘图上下文
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -44,6 +45,7 @@ export class InfiniteCanvas {
    * @param config - 可选的画布配置
    */
   constructor(canvas: HTMLCanvasElement, config?: Partial<CanvasConfig>) {
+    super();
     this.canvas = canvas;
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -96,7 +98,7 @@ export class InfiniteCanvas {
   }
 
   /**
-   * 绑定所有输入事件监听器
+   * 绑定所有输入事件监听器 todo 这个事件应该绑定在CanvasEventManager上
    * 包括鼠标事件和触摸事件
    */
   private bindEvents(): void {
@@ -121,7 +123,7 @@ export class InfiniteCanvas {
    * 处理鼠标滚轮事件（缩放）
    * 向鼠标位置缩放，保持鼠标指向的世界坐标点不变
    */
-  private handleWheel(e: WheelEvent): void {
+  public handleWheel(e: WheelEvent): void {
     e.preventDefault();
     
     const rect = this.canvas.getBoundingClientRect();
@@ -152,7 +154,7 @@ export class InfiniteCanvas {
    * 处理鼠标按下事件
    * 仅在中键或启用平移模式时开始拖动
    */
-  private handleMouseDown(e: MouseEvent): void {
+  public handleMouseDown(e: MouseEvent): void {
     console.log("down two")
     // 仅中键（button=1）或左键+平移模式时拖动
     if (e.button === 1 || (e.button === 0 && this.isPanEnabled)) {
@@ -166,7 +168,7 @@ export class InfiniteCanvas {
    * 处理鼠标移动事件
    * 更新鼠标世界坐标，并在拖动时平移画布
    */
-  private handleMouseMove(e: MouseEvent): void {
+  public handleMouseMove(e: MouseEvent): void {
     const rect = this.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -195,7 +197,7 @@ export class InfiniteCanvas {
    * 处理鼠标释放事件
    * 停止拖动并恢复鼠标样式
    */
-  private handleMouseUp(): void {
+  public handleMouseUp(): void {
     this.isDragging = false;
     if (this.isPanEnabled) {
       this.canvas.style.cursor = 'grab';
@@ -206,7 +208,7 @@ export class InfiniteCanvas {
    * 处理鼠标离开画布事件
    * 停止拖动并恢复鼠标样式
    */
-  private handleMouseOut(): void {
+  public handleMouseOut(): void {
     this.isDragging = false;
     if (this.isPanEnabled) {
       this.canvas.style.cursor = 'grab';
@@ -223,7 +225,7 @@ export class InfiniteCanvas {
    * 单指：开始拖动
    * 双指：记录初始缩放状态
    */
-  private handleTouchStart(e: TouchEvent): void {
+  public handleTouchStart(e: TouchEvent): void {
     e.preventDefault();
     if (e.touches.length === 1) {
       // 单指触摸 - 拖动
@@ -241,7 +243,7 @@ export class InfiniteCanvas {
    * 单指：平移画布
    * 双指：缩放和平移画布
    */
-  private handleTouchMove(e: TouchEvent): void {
+  public handleTouchMove(e: TouchEvent): void {
     e.preventDefault();
     if (e.touches.length === 1 && this.isDragging) {
       // 单指拖动
@@ -291,7 +293,7 @@ export class InfiniteCanvas {
   /**
    * 处理触摸结束事件
    */
-  private handleTouchEnd(): void {
+  public handleTouchEnd(): void {
     this.isDragging = false;
   }
 

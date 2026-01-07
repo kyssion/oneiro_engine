@@ -10,7 +10,7 @@ import { Shape, Rectangle, Circle, Triangle } from './index.ts';
  * - 图形的渲染顺序管理（Z-order）
  * - 图形样式的管理
  * - 选择状态的事件通知
- * 
+ * - 将恐图形的状态和相关的效果
  * 主要功能：
  * - 支持创建矩形、圆形、三角形
  * - 支持点击选择图形
@@ -38,29 +38,30 @@ export class ShapeManager {
   /**
    * 创建指定类型的图形
    * 根据当前图形类型创建对应的图形实例
-   * 
+   *
    * @param x - X 坐标（世界坐标）
    * @param y - Y 坐标（世界坐标）
+   * @param z - Z 层级
    * @param width - 宽度
    * @param height - 高度
    * @returns 创建的图形实例
    */
-  public createShape(x: number, y: number, width: number, height: number): Shape {
+  public createShape(x: number, y: number,z: number, width: number, height: number): Shape {
     let shape: Shape;
 
     // 根据当前图形类型创建对应的图形
     switch (this.currentShapeType) {
       case 'rectangle':
-        shape = new Rectangle(x, y, width, height, { ...this.currentStyle });
+        shape = new Rectangle(x, y, z, width, height, { ...this.currentStyle });
         break;
       case 'circle':
-        shape = new Circle(x, y, width, height, { ...this.currentStyle });
+        shape = new Circle(x, y, z, width, height, { ...this.currentStyle });
         break;
       case 'triangle':
-        shape = new Triangle(x, y, width, height, { ...this.currentStyle });
+        shape = new Triangle(x, y, z, width, height, { ...this.currentStyle });
         break;
       default:
-        shape = new Rectangle(x, y, width, height, { ...this.currentStyle });
+        shape = new Rectangle(x, y, z, width, height, { ...this.currentStyle });
     }
 
     this.shapes.push(shape);  // 添加到图形列表
