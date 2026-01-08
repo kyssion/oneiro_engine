@@ -102,6 +102,7 @@ export interface ViewportBounds {
  */
 export type ShapeType = 'rectangle' | 'circle' | 'triangle';
 
+
 /**
  * 交互模式
  * 定义用户当前的操作模式

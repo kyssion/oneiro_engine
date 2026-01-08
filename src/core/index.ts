@@ -12,7 +12,7 @@ export { CoordinateSystem } from './component/CoordinateSystem.ts';   // 坐标�
 
 // 图形管理类
 export { ShapeManager } from './shapes/ShapeManager.ts';           // 图形生命周期管理
-export { InteractionManager } from './event/InteractionManager.ts'; // 交互管理器
+export { InteractionManager } from '@/core/canvasEvent/InteractionManager.ts'; // 交互管理器
 
 // 导出所有图形类（Shape, Rectangle, Circle, Triangle）
 export * from './shapes';

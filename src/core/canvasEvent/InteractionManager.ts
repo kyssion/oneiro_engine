@@ -97,7 +97,6 @@ export class InteractionManager {
    * @private
    */
   private handleMouseDown(e: MouseEvent): void {
-    console.log("down one")
     // 仅处理左键
     if (e.button !== 0) return;
 
@@ -343,8 +342,6 @@ export class InteractionManager {
     const shape = this.shapeManager.getShapeAtPoint(world);
     if (shape) {
       this.canvasElement.style.cursor = 'move';
-    } else {
-      this.canvasElement.style.cursor = 'default';
     }
   }
 

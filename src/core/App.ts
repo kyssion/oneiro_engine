@@ -47,7 +47,7 @@ export class App {
     private axisModeSelect!: HTMLSelectElement;  // 坐标轴模式选择器
     private zoomDisplay!: HTMLSpanElement;       // 缩放级别显示
     private coordDisplay!: HTMLSpanElement;      // 坐标显示
-    private modeDisplay!: HTMLSpanElement;       // 模式显示
+    // private modeDisplay!: HTMLSpanElement;       // 模式显示
     private resetBtn!: HTMLButtonElement;        // 重置视图按钮
     private deleteBtn!: HTMLButtonElement;       // 删除图形按钮
 
@@ -108,7 +108,7 @@ export class App {
         this.axisModeSelect = document.getElementById('axis-mode-select') as HTMLSelectElement;
         this.zoomDisplay = document.getElementById('zoom-display') as HTMLSpanElement;
         this.coordDisplay = document.getElementById('coord-display') as HTMLSpanElement;
-        this.modeDisplay = document.getElementById('mode-display') as HTMLSpanElement;
+        // this.modeDisplay = document.getElementById('mode-display') as HTMLSpanElement;
         this.resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
         this.deleteBtn = document.getElementById('delete-btn') as HTMLButtonElement;
 
@@ -373,26 +373,26 @@ export class App {
         switch (mode) {
             case 'select':
                 this.toolSelectBtn.classList.add('active');
-                this.modeDisplay.textContent = 'Select Mode';
+                // this.modeDisplay.textContent = 'Select Mode';
                 break;
             case 'pan':
                 this.toolPanBtn.classList.add('active');
-                this.modeDisplay.textContent = 'Pan Mode';
+                // this.modeDisplay.textContent = 'Pan Mode';
                 break;
             case 'draw':
                 const type = shapeType || this.shapeManager.getShapeType();
                 switch (type) {
                     case 'rectangle':
                         this.shapeRectBtn.classList.add('active');
-                        this.modeDisplay.textContent = 'Draw Rectangle';
+                        // this.modeDisplay.textContent = 'Draw Rectangle';
                         break;
                     case 'circle':
                         this.shapeCircleBtn.classList.add('active');
-                        this.modeDisplay.textContent = 'Draw Circle';
+                        // this.modeDisplay.textContent = 'Draw Circle';
                         break;
                     case 'triangle':
                         this.shapeTriangleBtn.classList.add('active');
-                        this.modeDisplay.textContent = 'Draw Triangle';
+                        // this.modeDisplay.textContent = 'Draw Triangle';
                         break;
                 }
                 break;

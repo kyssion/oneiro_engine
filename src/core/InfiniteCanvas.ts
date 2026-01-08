@@ -155,12 +155,11 @@ export class InfiniteCanvas extends CanvasEvent{
    * 仅在中键或启用平移模式时开始拖动
    */
   public handleMouseDown(e: MouseEvent): void {
-    console.log("down two")
     // 仅中键（button=1）或左键+平移模式时拖动
     if (e.button === 1 || (e.button === 0 && this.isPanEnabled)) {
       this.isDragging = true;
       this.lastMousePos = { x: e.clientX, y: e.clientY };
-      this.canvas.style.cursor = 'grabbing';  // 改变鼠标样式 todo 这里没有生效
+      this.canvas.style.cursor = 'grabbing';
     }
   }
 
@@ -184,10 +183,9 @@ export class InfiniteCanvas extends CanvasEvent{
       // 都是使用相对于屏幕的数据，来确定偏移量
       const dx = e.clientX - this.lastMousePos.x;  // X 方向移动距离
       const dy = e.clientY - this.lastMousePos.y;  // Y 方向移动距离
-
+      this.canvas.style.cursor = 'grabbing';
       this.transform.offsetX += dx;
       this.transform.offsetY += dy;
-
       this.lastMousePos = { x: e.clientX, y: e.clientY };
       this.notifyTransformChange();
     }
