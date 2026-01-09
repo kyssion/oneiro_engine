@@ -164,7 +164,7 @@ export class App {
 
         // 工具按钮 - 平移模式
         this.toolPanBtn.addEventListener('click', () => {
-            this.setMode('pan');
+            this.setMode('translation');
         });
 
         // 图形按钮 - 矩形
@@ -243,7 +243,7 @@ export class App {
                     this.setMode('select');
                     break;
                 case 'h':  // H - 平移模式（Hand tool）
-                    this.setMode('pan');
+                    this.setMode('translation');
                     break;
                 case 'r':  // R - 矩形
                     this.setDrawMode('rectangle');
@@ -375,7 +375,7 @@ export class App {
                 this.toolSelectBtn.classList.add('active');
                 // this.modeDisplay.textContent = 'Select Mode';
                 break;
-            case 'pan':
+            case 'translation':
                 this.toolPanBtn.classList.add('active');
                 // this.modeDisplay.textContent = 'Pan Mode';
                 break;

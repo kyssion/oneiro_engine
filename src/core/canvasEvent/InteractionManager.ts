@@ -116,7 +116,7 @@ export class InteractionManager {
       case 'draw':
         this.handleDrawMouseDown(world);
         break;
-      case 'pan':
+      case 'translation':
         this.isPanning = true;
         break;
     }
@@ -375,7 +375,7 @@ export class InteractionManager {
       case 'draw':
         this.canvasElement.style.cursor = 'crosshair';  // 十字光标
         break;
-      case 'pan':
+      case 'translation':
         this.canvasElement.style.cursor = 'grab';       // 抓手光标
         break;
     }
@@ -390,7 +390,7 @@ export class InteractionManager {
   public setMode(mode: InteractionMode): void {
     this.mode = mode;
     // 更新画布平移模式
-    this.canvas.setPanEnabled(mode === 'pan');
+    this.canvas.setPanEnabled(mode === 'translation');
     this.updateCursorForMode();
     if (this.onModeChange) {
       this.onModeChange(mode);

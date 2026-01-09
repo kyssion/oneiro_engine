@@ -106,10 +106,11 @@ export type ShapeType = 'rectangle' | 'circle' | 'triangle';
 /**
  * 交互模式
  * 定义用户当前的操作模式
+ * 这个交互模式涉及到一个状态的流转.
  */
 export type InteractionMode = 
   | 'select'  // 选择模式：选中、移动、调整图形
-  | 'pan'     // 平移模式：拖动画布
+  | 'translation'     // 平移模式：拖动画布
   | 'draw';   // 绘制模式：创建新图形
 
 /**
